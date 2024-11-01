@@ -18,6 +18,7 @@ class CompLooper : public CompLooperBase {
     ~CompLooper();
 
     void SetNorm(bool norm=true){_norm = norm;}
+		void SetMode(std::string mode){_mode = mode;}
     void SetMakePlots(bool val=true);
     void SetMakeRatios(bool val=true);
     void SetPlotFiletype(std::string ft=".png");
@@ -28,11 +29,11 @@ class CompLooper : public CompLooperBase {
     bool _makePlots = false, _makeRatios = false;
     bool _norm = false;
     std::string _label1, _label2;
-    std::string _filetype;
+    std::string _filetype = ".png", _mode = "UPDATE";
 };
 
 CompLooper::CompLooper(const char *name, const char *channel, const char *label1, const char *label2)
-    : _filetype(".png"), _label1(label1), _label2(label2),
+    : _label1(label1), _label2(label2),
       CompLooperBase(name, channel, 
           ((std::string)"slimmed/" + label1 + ".root").c_str(), 
           ((std::string)"slimmed/" + label2 + ".root").c_str()
@@ -50,6 +51,10 @@ void CompLooper::SetPlotFiletype(std::string ft){
 }
 
 void CompLooper::Loop(){
+	if (_infile1 == nullptr || _infile2 == nullptr){
+		std::cerr << "There was a problem loading one of the files" << std::endl;
+		return;
+	}
   Init();
 
   // Options
@@ -57,7 +62,7 @@ void CompLooper::Loop(){
   bool ratioplot = false; //override for _makeRatios
 
   // Setup
-  TFile *histout = new TFile(("out/histout_" + _name + ".root").c_str(), "recreate");
+  TFile *histout = new TFile(("out/histout_" + _name + ".root").c_str(), _mode.c_str());
   if (!histout->IsOpen()) return;
   histout->cd();
 	TCanvas *c = new TCanvas("c", "Histogram Canvas");
@@ -154,7 +159,7 @@ void CompLooper::Loop(){
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
   Float_t l4Pt, l4Eta, l4Phi, l4Energy;
   Int_t l1PdgId, l2PdgId, l3PdgId, l4PdgId;
-  std::cout << "Begin looping over " << nentries << " entries..." << std::endl;
+  std::cout << std::enl << "Begin looping over " << nentries << " entries..." << std::endl;
   for (unsigned int i=0; i<nentries; i++){
     if (_ntuple1->GetEntry(i)){
       if (_channel == "eeee"){
@@ -201,7 +206,6 @@ void CompLooper::Loop(){
       }
       // Set primary/secondary pairs
       if (_channel == "eemm" && std::fabs((lp2+ln2).M() - Z_MASS) < std::fabs((lp1+ln1).M() - Z_MASS) ){
-        std::cout << "Had to swap!" << std::endl;
         ROOT::Math::PtEtaPhiEVector lp1_copy = lp1, ln1_copy = ln1;
         lp1 = lp2;
         ln1 = ln2;
@@ -296,7 +300,7 @@ void CompLooper::Loop(){
       //PolCosTheta_34->Fill(GetPolCosTheta(lp2, ln2), weight);
     }
   }
-  std::cout << "End looping." << std::endl << std::endl;
+  std::cout << "End looping." << std::endl;
 
 	// Formatting
   InvMass4l_1->SetMinimum(0);
@@ -407,6 +411,10 @@ void CompLooper::Loop(){
 
   // Writing
   histout->cd();
+  histout->rmdir(_channel.c_str());
+  TDirectory *subdir = histout->mkdir(_channel.c_str());
+  if (subdir != nullptr) subdir->cd();
+
   InvMass4l_1->Write();
   Z2Mass_1->Write();
   InvMass12_1->Write();
@@ -430,8 +438,64 @@ void CompLooper::Loop(){
 }
 
 #ifndef __CLING__
-int main(int nargs, char *args[]){
-  CompLooper l("comp_4e", "eeee", "slimmed/2022MC.root", "slimmed/2022Data.root");
+#include "interface/argparse.h"
+int main(int nargs, char *argv[]){
+	auto parser = argparse::ArgumentParser(nargs, argv)
+		.formatter_class(argparse::HelpFormatter::ArgumentDefaults);
+
+  parser.add_argument<bool>("--mc1").def("false")
+    .help("if true, consider first input to be MC");
+  parser.add_argument<bool>("--mc2").def("false")
+    .help("if true, consider second input to be MC");
+  parser.add_argument<double>("-l", "--lumi").def("7.561502251") //2022CD
+    .help("data luminosity to scale MC in fb-1");
+  parser.add_argument<double>("-x", "--xsec1").def("1390")
+    .help("cross-section of given MC process in fb for first input");
+  parser.add_argument<double>("-X", "--xsec2").def("1390")
+    .help("cross-section of given MC process in fb for second input");
+  parser.add_argument("-c", "--channel").choices("eeee,eemm,mmmm")
+    .help("process only the specified channel, otherwise all");
+  parser.add_argument<bool>("-n", "--norm").def("false")
+    .help("if true, scale histograms to 1");
+  parser.add_argument("-m", "--mode").def("UPDATE")
+    .help("option for creating the output file");
+  parser.add_argument<bool>("--noplots").def("false")
+    .help("if true, don't save plots to 'plots/' directory");
+  parser.add_argument("-t", "--filetype").def(".png")
+    .help("filetype for output plots");
+
+	parser.add_argument("name")
+		.help("name for output file (and optional plots subdirectory)");
+  parser.add_argument("label1").metavar("first-label")
+		.help("name for first input slimmed ntuple, as seen in 'slimmed/*.root");
+  parser.add_argument("label2").metavar("second-label")
+		.help("name for second input slimmed ntuple, as seen in 'slimmed/*.root");
+
+  auto args = parser.parse_args();
+
+	for (std::string channel : {"eeee", "eemm", "mmmm"}){
+    if (!args["channel"].is_none() && args["channel"] != channel)
+      continue;
+		CompLooper l(args["name"].c_str(), channel.c_str(), args["label1"].c_str(), args["label2"].c_str());
+    if (!args["noplots"].is_true()) l.SetMakePlots();
+    if (args["norm"].is_true()) l.SetNorm();
+    l.SetMode(args["mode"]);
+    l.SetPlotFiletype(args["filetype"]);
+		
+		if (args["mc1"].is_true()){
+      l.SetMC1();
+      l.SetLumi(args["lumi"]);
+      l.SetXsec1(args["xsec1"]);
+		}
+		if (args["mc2"].is_true()){
+      l.SetMC2();
+      l.SetLumi(args["lumi"]);
+      l.SetXsec2(args["xsec2"]);
+		}
+		l.Loop();
+	}
+	return 0;
+  CompLooper l("comp_4e", "eeee", "2022MC", "2022Data");
   l.SetMC1();
   l.SetMakePlots();
   l.SetLumi(7.561502251);//fb-1

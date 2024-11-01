@@ -1615,14 +1615,18 @@ class CompLooperBase{
 CompLooperBase::CompLooperBase(const char *name, const char *channel, const char *filename1, const char *filename2)
   : _name(name), _channel(channel){
   _infile1 = TFile::Open(filename1);
+  if (_infile1 != nullptr)
+		_ntuple1 = (TTree*)_infile1->Get((_channel + "/ntuple").c_str());
   _infile2 = TFile::Open(filename2);
-  _ntuple1 = (TTree*)_infile1->Get((_channel + "/ntuple").c_str());
-  _ntuple2 = (TTree*)_infile2->Get((_channel + "/ntuple").c_str());
+  if (_infile2 != nullptr)
+		_ntuple2 = (TTree*)_infile2->Get((_channel + "/ntuple").c_str());
 }
 
 CompLooperBase::~CompLooperBase(){
-  _infile1->Close();
-  _infile2->Close();
+  if (_infile1 != nullptr)
+		_infile1->Close();
+  if (_infile2 != nullptr)
+		_infile2->Close();
 }
 
 void CompLooperBase::Init(){
