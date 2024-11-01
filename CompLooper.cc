@@ -159,7 +159,7 @@ void CompLooper::Loop(){
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
   Float_t l4Pt, l4Eta, l4Phi, l4Energy;
   Int_t l1PdgId, l2PdgId, l3PdgId, l4PdgId;
-  std::cout << std::enl << "Begin looping over " << nentries << " entries..." << std::endl;
+  std::cout << std::endl << "Begin looping over " << nentries << " entries..." << std::endl;
   for (unsigned int i=0; i<nentries; i++){
     if (_ntuple1->GetEntry(i)){
       if (_channel == "eeee"){
