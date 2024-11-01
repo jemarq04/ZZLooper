@@ -197,13 +197,13 @@ namespace argparse{
 		// Arithmetic Operators
 		template <typename T>
 		ArgumentValueList operator+(const T& other) const{
-			ArgumentValueList temp = {""};
+      std::vector<std::string> temp = {""};
 			temp.at(0) = (T)at(0) + other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator-(const T& other) const{
-			ArgumentValueList temp = {""};
+      std::vector<std::string> temp = {""};
 			temp.at(0) = (T)at(0) - other;
 			return temp;
 		}
@@ -671,7 +671,7 @@ namespace argparse{
 	
 	// Arithmetic Operators {{{2
 	ArgumentValueList ArgumentValueList::operator+(const char* other) const{
-		ArgumentValueList temp = {(std::string)at(0).c_str() + other};
+    std::vector<std::string> temp = {at(0) + other};
 		return temp;
 	}
 	
