@@ -292,7 +292,7 @@ int main(int nargs, char *argv[]){
     if (!args["noplots"].is_true()) l.SetMakePlots();
     if (args["norm"].is_true()) l.SetNorm();
     l.SetMode(args["mode"]);
-    l.SetPlotFiletype(args["filetype"].str());
+    l.SetPlotFiletype(args["filetype"]);
 
     if (args["mc"].is_true()){
       l.SetMC();
