@@ -1,6 +1,6 @@
 #ifndef ARGPARSE_H
 #define ARGPARSE_H
-#define ARGPARSE_VERSION 2.2.3
+#define ARGPARSE_VERSION 2.2.5
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -126,13 +126,14 @@ namespace argparse{
 
 		// Accessors
 		bool is_none() const;
-    bool is_true() const;
+		bool is_true() const;
 	};
 
 
 	class ArgumentValueList : public std::vector<ArgumentValue>{
 	public:
 		ArgumentValueList(std::initializer_list<ArgumentValue> vals={});
+		ArgumentValueList(std::vector<std::string> vals);
 
 		// Assignment Operators
 		ArgumentValueList& operator=(const std::vector<std::string>& other);
@@ -196,36 +197,31 @@ namespace argparse{
 		// Arithmetic Operators
 		template <typename T>
 		ArgumentValueList operator+(const T& other) const{
-			ArgumentValueList temp;
-			temp.push_back("");
+			ArgumentValueList temp = {""};
 			temp.at(0) = (T)at(0) + other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator-(const T& other) const{
-			ArgumentValueList temp;
-			temp.push_back("");
+			ArgumentValueList temp = {""};
 			temp.at(0) = (T)at(0) - other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator*(const T& other) const{
-			ArgumentValueList temp;
-			temp.push_back("");
+			ArgumentValueList temp = {""};
 			temp.at(0) = (T)at(0) * other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator/(const T& other) const{
-			ArgumentValueList temp;
-			temp.push_back("");
+			ArgumentValueList temp = {""};
 			temp.at(0) = (T)at(0) / other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator%(const T& other) const{
-			ArgumentValueList temp;
-			temp.push_back("");
+			ArgumentValueList temp = {""};
 			temp.at(0) = (T)at(0) % other;
 			return temp;
 		}
@@ -246,9 +242,13 @@ namespace argparse{
 		std::string str() const;
 		const char* c_str() const;
 		bool is_none() const;
-    bool is_true() const;
+		bool is_true() const;
 		std::vector<std::string> vec() const;
 	};
+	std::ostream& operator<<(std::ostream& os, const ArgumentValueList& arglist){
+		os << arglist.str();
+		return os;
+	}
 	typedef std::map<std::string, ArgumentValueList> ArgumentMap;
 	std::string format_args(ArgumentMap args);
 	void print_args(ArgumentMap args, std::ostream& out=std::cout);
@@ -295,9 +295,10 @@ namespace argparse{
 			Argument& help(std::string="");
 			Argument& metavar(std::string metavar, char delim=',');
 			Argument& def(std::string def, char delim=',');
-			Argument& constant(std::string con, char delim=',');
 			Argument& version(std::string version);
 			Argument& print_help();
+
+			Argument& constant(std::string con, char delim=',');
 			Argument& count();
 			
 		private:
@@ -440,17 +441,20 @@ namespace argparse{
 		
 		SubparserList& add_subparsers();
 		
-		// Chain Modifiers
+		// Chain Modifiers (TODO)
 		ArgumentParser& prog(std::string prog);
 		ArgumentParser& usage(std::string usage);
 		ArgumentParser& description(std::string desc);
 		ArgumentParser& epilog(std::string epilog);
-		ArgumentParser& add_help(bool add_help);
-		ArgumentParser& argument_default(std::string none);
 		ArgumentParser& parent(const ArgumentParser& parser);
-		ArgumentParser& conflict_handler(std::string name);
 		ArgumentParser& formatter_class(HelpFormatter format);
+		//prefix_chars()
 		ArgumentParser& fromfile_prefix_chars(std::string prefix);
+		ArgumentParser& argument_default(std::string def);
+		//allow_abrev()
+		ArgumentParser& conflict_handler(std::string name);
+		ArgumentParser& add_help(bool add_help);
+		//exit_on_error()
 		
 		ArgumentParser& set_defaults(std::map<std::string, std::string> defaults);
 		ArgumentParser& help(std::string help);
@@ -459,7 +463,7 @@ namespace argparse{
 		
 		// Accessors
 		std::string get_prog() const;
-		std::vector<std::string> get_default(std::string name) const;
+		ArgumentValueList get_default(std::string name) const;
 		std::string format_usage();
 		std::string format_help();
 		void print_usage(std::ostream& out=std::cout);
@@ -619,13 +623,16 @@ namespace argparse{
 	
 	// Accessors {{{2
 	bool ArgumentValue::is_none() const{return *this == NONE;}
-  bool ArgumentValue::is_true() const{return *this == TRUE;}
+	bool ArgumentValue::is_true() const{return *this == TRUE;}
 	
 	// === ARGUMENT VALUE LIST === {{{1
 	//
-	// Constructor {{{2
+	// Constructors {{{2
 	ArgumentValueList::ArgumentValueList(std::initializer_list<ArgumentValue> vals){
-		for (auto & val : vals) push_back(val);
+		for (auto& val : vals) push_back(val);
+	}
+	ArgumentValueList::ArgumentValueList(std::vector<std::string> vals){
+		for (auto& val : vals) push_back(val);
 	}
 	
 	// Assignment Operators {{{2
@@ -664,8 +671,7 @@ namespace argparse{
 	
 	// Arithmetic Operators {{{2
 	ArgumentValueList ArgumentValueList::operator+(const char* other) const{
-		ArgumentValueList temp;
-		temp.push_back((std::string)at(0).c_str() + other);
+		ArgumentValueList temp = {(std::string)at(0).c_str() + other};
 		return temp;
 	}
 	
@@ -687,12 +693,6 @@ namespace argparse{
 		return temp;
 	}	
 	
-	// Stream Operators {{{2
-	std::ostream& operator<<(std::ostream& os, const ArgumentValueList& arglist){
-		os << arglist.str();
-		return os;
-	}
-	
 	// Modifiers {{{2
 	void ArgumentValueList::str(const std::string& val){at(0) = val;}
 	
@@ -700,7 +700,7 @@ namespace argparse{
 	std::string ArgumentValueList::str() const{return at(0);}
 	const char* ArgumentValueList::c_str() const{return at(0).c_str();}
 	bool ArgumentValueList::is_none() const{return at(0) == NONE;}
-  bool ArgumentValueList::is_true() const{return at(0) == TRUE;}
+	bool ArgumentValueList::is_true() const{return at(0) == TRUE;}
 	std::vector<std::string> ArgumentValueList::vec() const{
 		std::vector<std::string> result;
 		for (auto& val : *this) result.push_back((std::string)val);
@@ -980,7 +980,10 @@ namespace argparse{
 	
 	// Accessors {{{2
 	std::string ArgumentParser::get_prog() const{return _prog;}
-	std::vector<std::string> ArgumentParser::get_default(std::string name) const{
+	ArgumentValueList ArgumentParser::get_default(std::string name) const{
+		for (const auto& it : _defaults)
+			if (it.first == name)
+				return std::vector<std::string>{it.second};
 		for (const auto& arg : _optlist)
 			if (arg._dest == name)
 				return arg._def;
@@ -1366,6 +1369,7 @@ namespace argparse{
 	
 		std::string reqlist = "";
 		for (int i=0; i<_optlist.size(); i++){
+			bool parser_def = args.find(_optlist[i]._dest) != args.end();
 			if (_optlist[i]._action == Action::Version || _optlist[i]._action == Action::Help)
 				continue;
 			if (!_optlist[i]._found){
@@ -1375,7 +1379,7 @@ namespace argparse{
 					else
 						reqlist += ", " + _optlist[i].get_id();
 				}
-				else if (_optlist[i]._has_default){
+				else if (_optlist[i]._has_default && !parser_def){
 					_optlist[i]._val = _optlist[i]._def;
 					_optlist[i]._found = true;
 				}
@@ -1387,7 +1391,7 @@ namespace argparse{
 			
 			if (_optlist[i]._found)
 				args[_optlist[i]._dest] = _optlist[i]._val;
-			else if (_none_str != SUPPRESS)
+			else if (_none_str != SUPPRESS && !parser_def)
 				args[_optlist[i]._dest] = std::vector<std::string>{_none_str};
 		}
 		// Positional Arguments
