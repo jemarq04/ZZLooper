@@ -3,6 +3,7 @@
 
 plots/
 
+*.o
 ZZSlimmer_cc*.*
 ZZLooper_cc*.*
 CompLooper_cc*.*

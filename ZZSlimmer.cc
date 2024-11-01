@@ -116,12 +116,12 @@ int main(int nargs, char *argv[]){
     .help("option for creating the output file");
   parser.add_argument("-f", "--filename")
     .help("use the given file for the list of datasets instead of searching by label");
-  parser.add_argument("label").help("name for input dataset, as seen in 'in/*.dat");
+  parser.add_argument("label").help("name for input dataset, as seen in 'inputs/*.dat");
 
   auto args = parser.parse_args();
 
   std::string filename = args["filename"].is_none()?
-    (std::string)"in/" + args["label"].str() + ".dat" : args["filename"];
+    (std::string)"inputs/" + args["label"].str() + ".dat" : args["filename"];
   std::cout << "Getting list of datasets from " << filename << std::endl;
   for (std::string channel : {"eeee", "eemm", "mmmm"}){
     if (!args["channel"].is_none() && args["channel"] != channel)

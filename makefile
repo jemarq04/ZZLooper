@@ -4,7 +4,7 @@ CFLAGS=`root-config --cflags` -c -g
 LFLAGS=`root-config --libs` -lGenVector -g -o
 EXEC=loop
 
-all: ZZLooper CompLooper
+all: ZZSlimmer ZZLooper CompLooper
 
 ZZSlimmer: ZZSlimmer.cc interface/ZZSlimmerBase.h; $(CC) $(FLAGS) $@ $<
 
