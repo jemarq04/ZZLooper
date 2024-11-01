@@ -8,13 +8,13 @@ all: ZZSlimmer loopers
 
 loopers: ZZLooper CompLooper
 
-ZZSlimmer: ZZSlimmer.cc interface/ZZSlimmerBase.h; $(CC) $(FLAGS) $@ $<
+ZZSlimmer: ZZSlimmer.cc interface/ZZSlimmerBase.h interface/argparse.h; $(CC) $(FLAGS) $@ $<
 
-ZZLooper: ZZLooper.cc interface/ZZLooperBase.h; $(CC) $(FLAGS) $@ $<
+ZZLooper: ZZLooper.cc interface/ZZLooperBase.h interface/argparse.h; $(CC) $(FLAGS) $@ $<
 
 CompLooper: CompLooper.o RatioPlotter.o; $(CC) $(LFLAGS) $@ $^
 
-CompLooper.o: CompLooper.cc interface/CompLooperBase.h; $(CC) $(CFLAGS) $<
+CompLooper.o: CompLooper.cc interface/CompLooperBase.h interface/argparse.h; $(CC) $(CFLAGS) $<
 
 RatioPlotter.o: RatioPlotter.cc RatioPlotter.h; $(CC) $(CFLAGS) $<
 
