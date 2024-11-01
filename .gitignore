@@ -1,0 +1,12 @@
+*.txt
+*.root
+
+plots/
+
+ZZSlimmer_cc*.*
+ZZLooper_cc*.*
+CompLooper_cc*.*
+
+ZZSlimmer
+ZZLooper
+CompLooper
