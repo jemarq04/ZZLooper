@@ -79,6 +79,11 @@ void CompLooper::Loop(){
     plotdir = opendir(dirname.c_str());
     if (!plotdir) mkdir(dirname.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     else closedir(plotdir);
+
+    dirname += "/" + _channel;
+    plotdir = opendir(dirname.c_str());
+    if (!plotdir) mkdir(dirname.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+    else closedir(plotdir);
   }
 
   // Set values based on options
