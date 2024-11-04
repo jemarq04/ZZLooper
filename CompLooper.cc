@@ -373,12 +373,21 @@ void CompLooper::Loop(){
       c->SaveAs((dirname + "/" + hist->GetName() + _filetype).c_str());
     };
     auto DrawSame = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist1, TH1* hist2){
+      std::string histname = hist1->GetName();
+      histname = histname.substr(0, histname.size()-2);
+      TH1 *hist1_clone = (TH1*)hist1->Clone(histname.c_str());
+      std::string title = hist1->GetTitle();
+      if (title.find(labels[0]) != std::string::npos){
+        title = title.substr(0, title.find(labels[0])-2);
+        hist1_clone->SetTitle(title.c_str());
+      }
+
       Float_t max = (hist1->GetMaximum() > hist2->GetMaximum())?
         hist1->GetMaximum() : hist2->GetMaximum();
-      hist1->SetMaximum(max*1.2);
+      hist1_clone->SetMaximum(max*1.2);
       hist2->SetMaximum(max*1.2);
 
-      hist1->Draw("hist");
+      hist1_clone->Draw("hist");
       hist2->SetLineColor(kRed);
       hist2->Draw("hist same");
 
@@ -386,8 +395,7 @@ void CompLooper::Loop(){
       TLegend *legend = c->BuildLegend();
       for (const TObject *obj : *legend->GetListOfPrimitives())
         ((TLegendEntry*)obj)->SetLabel(labels[idx++].c_str());
-      std::string histname = hist1->GetName();
-      c->SaveAs((dirname + "/" + histname.substr(0, histname.size()-2) + _filetype).c_str());
+      c->SaveAs((dirname + "/" + histname + _filetype).c_str());
     };
 
     Draw(InvMass4l_1);
@@ -500,12 +508,5 @@ int main(int nargs, char *argv[]){
 		l.Loop();
 	}
 	return 0;
-  CompLooper l("comp_4e", "eeee", "2022MC", "2022Data");
-  l.SetMC1();
-  l.SetMakePlots();
-  l.SetLumi(7.561502251);//fb-1
-  l.SetXsec1(1.390*1000);//fb
-  l.Loop();
-  return 0;
 }
 #endif
