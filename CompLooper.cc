@@ -105,60 +105,41 @@ void CompLooper::Loop(){
 
   // Declaring Histograms
   TH1F *InvMass4l_1 = new TH1F("InvMass4l_1", TString::Format("4-Lepton Invariant Mass (%s)", _label1.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
-  TH1F *Z2Mass_1 = new TH1F("Z2Mass_1", TString::Format("Z2Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass12_1 = new TH1F("InvMass12_1", TString::Format("Primary Lepton Pair Invariant Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass34_1 = new TH1F("InvMass34_1", TString::Format("Secondary Lepton Pair Invariant Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy_1 = new TH1F("LepEnergy_1", TString::Format("Lepton Energy (%s)", _label1.c_str()), 60, 0, 600);
   TH1F *LepPt_1 = new TH1F("LepPt_1", TString::Format("Lepton Transverse Momentum (%s)", _label1.c_str()), LepPt_binning.size()-1, &LepPt_binning[0]);
+	TH1F *PolCosTheta12_1 = new TH1F("PolCosTheta12_1", TString::Format("cos#theta_{12}* (%s)", _label1.c_str()), 50, -1, 1);
+	TH1F *PolCosTheta34_1 = new TH1F("PolCosTheta34_1", TString::Format("cos#theta_{34}* (%s)", _label1.c_str()), 50, -1, 1);
   SetTitles(InvMass4l_1, "m_{4l} [GeV]");
-  SetTitles(Z2Mass_1, "m_{Z_{2}} [GeV]");
   SetTitles(InvMass12_1, "m_{Z_{1}} [GeV]");
   SetTitles(InvMass34_1, "m_{Z_{2}} [GeV]");
   SetTitles(LepEnergy_1, "E_{l} [GeV]");
   SetTitles(LepPt_1, "p_{l,T} [GeV]");
+	SetTitles(PolCosTheta12_1, "cos#theta_{12}*");
+	SetTitles(PolCosTheta34_1, "cos#theta_{34}*");
 
   TH1F *InvMass4l_2 = new TH1F("InvMass4l_2", TString::Format("4-Lepton Invariant Mass (%s)", _label2.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
-  TH1F *Z2Mass_2 = new TH1F("Z2Mass_2", TString::Format("Z2Mass (%s)", _label2.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass12_2 = new TH1F("InvMass12_2", TString::Format("Primary Lepton Pair Invariant Mass (%s)", _label2.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass34_2 = new TH1F("InvMass34_2", TString::Format("Secondary Lepton Pair Invariant Mass (%s)", _label2.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy_2 = new TH1F("LepEnergy_2", TString::Format("Lepton Energy (%s)", _label2.c_str()), 60, 0, 600);
   TH1F *LepPt_2 = new TH1F("LepPt_2", TString::Format("Lepton Transverse Momentum (%s)", _label2.c_str()), LepPt_binning.size()-1, &LepPt_binning[0]);
+	TH1F *PolCosTheta12_2 = new TH1F("PolCosTheta12_2", TString::Format("cos#theta_{12}* (%s)", _label2.c_str()), 50, -1, 1);
+	TH1F *PolCosTheta34_2 = new TH1F("PolCosTheta34_2", TString::Format("cos#theta_{34}* (%s)", _label2.c_str()), 50, -1, 1);
   SetTitles(InvMass4l_2, "m_{4l} [GeV]");
-  SetTitles(Z2Mass_1, "m_{Z_{2}} [GeV]");
   SetTitles(InvMass12_2, "m_{Z_{1}} [GeV]");
   SetTitles(InvMass34_2, "m_{Z_{2}} [GeV]");
   SetTitles(LepEnergy_2, "E_{l} [GeV]");
   SetTitles(LepPt_2, "p_{l,T} [GeV]");
-
-  std::string cutstr1 = _isT1MC? "genWeight" : "";
-  _ntuple1->Draw("Mass >> InvMass4l_1", cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%s_%s_Mass >> Z2Mass_1", l3.c_str(), l4.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sEnergy >> LepEnergy_1", l1.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sEnergy >>+LepEnergy_1", l2.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sEnergy >>+LepEnergy_1", l3.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sEnergy >>+LepEnergy_1", l4.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sPt >> LepPt_1", l1.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sPt >>+LepPt_1", l2.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sPt >>+LepPt_1", l3.c_str()), cutstr1.c_str(), "goff");
-  _ntuple1->Draw(TString::Format("%sPt >>+LepPt_1", l4.c_str()), cutstr1.c_str(), "goff");
-
-  std::string cutstr2 = _isT2MC? "genWeight" : "";
-  _ntuple2->Draw("Mass >> InvMass4l_2", cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%s_%s_Mass >> Z2Mass_2", l3.c_str(), l4.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sEnergy >> LepEnergy_2", l1.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sEnergy >>+LepEnergy_2", l2.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sEnergy >>+LepEnergy_2", l3.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sEnergy >>+LepEnergy_2", l4.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sPt >> LepPt_2", l1.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sPt >>+LepPt_2", l2.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sPt >>+LepPt_2", l3.c_str()), cutstr2.c_str(), "goff");
-  _ntuple2->Draw(TString::Format("%sPt >>+LepPt_2", l4.c_str()), cutstr2.c_str(), "goff");
+	SetTitles(PolCosTheta12_2, "cos#theta_{12}*");
+	SetTitles(PolCosTheta34_2, "cos#theta_{34}*");
 
   Long64_t nentries1 = _ntuple1->GetEntries();
   Long64_t nentries2 = _ntuple2->GetEntries();
   Long64_t nentries = nentries1 > nentries2? nentries1 : nentries2;
 
   ROOT::Math::PtEtaPhiEVector lp1, ln1, lp2, ln2;
+	Float_t Z1mass, Z2mass;
   Float_t l1Pt, l1Eta, l1Phi, l1Energy;
   Float_t l2Pt, l2Eta, l2Phi, l2Energy;
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
@@ -168,6 +149,7 @@ void CompLooper::Loop(){
   for (unsigned int i=0; i<nentries; i++){
     if (_ntuple1->GetEntry(i)){
       if (_channel == "eeee"){
+				Z1mass = e1_e2_Mass1; Z2mass = e3_e4_Mass1;
         l1Pt = e1Pt1; l1Eta = e1Eta1; l1Phi = e1Phi1; l1Energy = e1Energy1;
         l2Pt = e2Pt1; l2Eta = e2Eta1; l2Phi = e2Phi1; l2Energy = e2Energy1;
         l3Pt = e3Pt1; l3Eta = e3Eta1; l3Phi = e3Phi1; l3Energy = e3Energy1;
@@ -176,14 +158,27 @@ void CompLooper::Loop(){
         l3PdgId = e3PdgId1; l4PdgId = e4PdgId1;
       }
       else if (_channel == "eemm"){
-        l1Pt = e1Pt1; l1Eta = e1Eta1; l1Phi = e1Phi1; l1Energy = e1Energy1;
-        l2Pt = e2Pt1; l2Eta = e2Eta1; l2Phi = e2Phi1; l2Energy = e2Energy1;
-        l3Pt = m1Pt1; l3Eta = m1Eta1; l3Phi = m1Phi1; l3Energy = m1Energy1;
-        l4Pt = m2Pt1; l4Eta = m2Eta1; l4Phi = m2Phi1; l4Energy = m2Energy1;
-        l1PdgId = e1PdgId1; l2PdgId = e2PdgId1;
-        l3PdgId = m1PdgId1; l4PdgId = m2PdgId1;
+				if (std::fabs(e1_e2_Mass1 - Z_MASS) < std::fabs(m1_m2_Mass1 - Z_MASS)){
+					Z1mass = e1_e2_Mass1; Z2mass = m1_m2_Mass1;
+					l1Pt = e1Pt1; l1Eta = e1Eta1; l1Phi = e1Phi1; l1Energy = e1Energy1;
+					l2Pt = e2Pt1; l2Eta = e2Eta1; l2Phi = e2Phi1; l2Energy = e2Energy1;
+					l3Pt = m1Pt1; l3Eta = m1Eta1; l3Phi = m1Phi1; l3Energy = m1Energy1;
+					l4Pt = m2Pt1; l4Eta = m2Eta1; l4Phi = m2Phi1; l4Energy = m2Energy1;
+					l1PdgId = e1PdgId1; l2PdgId = e2PdgId1;
+					l3PdgId = m1PdgId1; l4PdgId = m2PdgId1;
+				}
+				else{
+					Z1mass = m1_m2_Mass1; Z2mass = e1_e2_Mass1;
+					l1Pt = m1Pt1; l1Eta = m1Eta1; l1Phi = m1Phi1; l1Energy = m1Energy1;
+					l2Pt = m2Pt1; l2Eta = m2Eta1; l2Phi = m2Phi1; l2Energy = m2Energy1;
+					l3Pt = e1Pt1; l3Eta = e1Eta1; l3Phi = e1Phi1; l3Energy = e1Energy1;
+					l4Pt = e2Pt1; l4Eta = e2Eta1; l4Phi = e2Phi1; l4Energy = e2Energy1;
+					l1PdgId = m1PdgId1; l2PdgId = m2PdgId1;
+					l3PdgId = e1PdgId1; l4PdgId = e2PdgId1;
+				}
       }
       else if (_channel == "mmmm"){
+				Z1mass = m1_m2_Mass1; Z2mass = m3_m4_Mass1;
         l1Pt = m1Pt1; l1Eta = m1Eta1; l1Phi = m1Phi1; l1Energy = m1Energy1;
         l2Pt = m2Pt1; l2Eta = m2Eta1; l2Phi = m2Phi1; l2Energy = m2Energy1;
         l3Pt = m3Pt1; l3Eta = m3Eta1; l3Phi = m3Phi1; l3Energy = m3Energy1;
@@ -191,7 +186,7 @@ void CompLooper::Loop(){
         l1PdgId = m1PdgId1; l2PdgId = m2PdgId1;
         l3PdgId = m3PdgId1; l4PdgId = m4PdgId1;
       }
-      // Set electron pairs
+      // Set primary pair
       if (l1PdgId > 0){
         lp1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
         ln1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
@@ -200,7 +195,7 @@ void CompLooper::Loop(){
         ln1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
         lp1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
       }
-      // Set muon pairs
+      // Set secondary pair
       if (l3PdgId > 0){
         lp2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
         ln2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
@@ -209,34 +204,40 @@ void CompLooper::Loop(){
         ln2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
         lp2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
       }
-      // Set primary/secondary pairs
-      if (_channel == "eemm" && std::fabs((lp2+ln2).M() - Z_MASS) < std::fabs((lp1+ln1).M() - Z_MASS) ){
-        ROOT::Math::PtEtaPhiEVector lp1_copy = lp1, ln1_copy = ln1;
-        lp1 = lp2;
-        ln1 = ln2;
-        lp2 = lp1_copy;
-        ln2 = ln1_copy;
-      }
       // Sort by Pt
+			/*
       std::vector<ROOT::Math::PtEtaPhiEVector> leptons{lp1, ln1, lp2, ln2};
       std::sort(leptons.begin(), leptons.end(), 
         [](const ROOT::Math::PtEtaPhiEVector &v1, const ROOT::Math::PtEtaPhiEVector &v2){
           return v1.Pt() > v2.Pt();
         }
       );
+			*/
 
-      Float_t weight = _isT1MC? genWeight1 : 1.;
+			if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+				Float_t weight = _isT1MC? genWeight1 : 1.;
 
-      // Inv Mass (12, 34)
-      InvMass12_1->Fill((lp1+ln1).M(), weight);
-      InvMass34_1->Fill((lp2+ln2).M(), weight);
+				InvMass4l_1->Fill(Mass1, weight);
+				InvMass12_1->Fill(Z1mass, weight);
+				InvMass34_1->Fill(Z2mass, weight);
 
-      // PolCosTheta
-      //PolCosTheta_12->Fill(GetPolCosTheta(lp1, ln1), weight);
-      //PolCosTheta_34->Fill(GetPolCosTheta(lp2, ln2), weight);
+				LepEnergy_1->Fill(l1Energy, weight);
+				LepEnergy_1->Fill(l2Energy, weight);
+				LepEnergy_1->Fill(l3Energy, weight);
+				LepEnergy_1->Fill(l4Energy, weight);
+
+				LepPt_1->Fill(l1Pt, weight);
+				LepPt_1->Fill(l2Pt, weight);
+				LepPt_1->Fill(l3Pt, weight);
+				LepPt_1->Fill(l4Pt, weight);
+
+				PolCosTheta12_1->Fill(GetPolCosTheta(lp1, ln1), weight);
+				PolCosTheta34_1->Fill(GetPolCosTheta(lp2, ln2), weight);
+			}
     }
     if (_ntuple2->GetEntry(i)){
       if (_channel == "eeee"){
+				Z1mass = e1_e2_Mass2; Z2mass = e3_e4_Mass2;
         l1Pt = e1Pt2; l1Eta = e1Eta2; l1Phi = e1Phi2; l1Energy = e1Energy2;
         l2Pt = e2Pt2; l2Eta = e2Eta2; l2Phi = e2Phi2; l2Energy = e2Energy2;
         l3Pt = e3Pt2; l3Eta = e3Eta2; l3Phi = e3Phi2; l3Energy = e3Energy2;
@@ -245,14 +246,27 @@ void CompLooper::Loop(){
         l3PdgId = e3PdgId2; l4PdgId = e4PdgId2;
       }
       else if (_channel == "eemm"){
-        l1Pt = e1Pt2; l1Eta = e1Eta2; l1Phi = e1Phi2; l1Energy = e1Energy2;
-        l2Pt = e2Pt2; l2Eta = e2Eta2; l2Phi = e2Phi2; l2Energy = e2Energy2;
-        l3Pt = m1Pt2; l3Eta = m1Eta2; l3Phi = m1Phi2; l3Energy = m1Energy2;
-        l4Pt = m2Pt2; l4Eta = m2Eta2; l4Phi = m2Phi2; l4Energy = m2Energy2;
-        l1PdgId = e1PdgId2; l2PdgId = e2PdgId2;
-        l3PdgId = m1PdgId2; l4PdgId = m2PdgId2;
+				if (std::fabs(e1_e2_Mass2 - Z_MASS) < std::fabs(m1_m2_Mass2 - Z_MASS)){
+					Z1mass = e1_e2_Mass2; Z2mass = m1_m2_Mass2;
+					l1Pt = e1Pt2; l1Eta = e1Eta2; l1Phi = e1Phi2; l1Energy = e1Energy2;
+					l2Pt = e2Pt2; l2Eta = e2Eta2; l2Phi = e2Phi2; l2Energy = e2Energy2;
+					l3Pt = m1Pt2; l3Eta = m1Eta2; l3Phi = m1Phi2; l3Energy = m1Energy2;
+					l4Pt = m2Pt2; l4Eta = m2Eta2; l4Phi = m2Phi2; l4Energy = m2Energy2;
+					l1PdgId = e1PdgId2; l2PdgId = e2PdgId2;
+					l3PdgId = m1PdgId2; l4PdgId = m2PdgId2;
+				}
+				else{
+					Z1mass = m1_m2_Mass2; Z2mass = e1_e2_Mass2;
+					l1Pt = m1Pt2; l1Eta = m1Eta2; l1Phi = m1Phi2; l1Energy = m1Energy2;
+					l2Pt = m2Pt2; l2Eta = m2Eta2; l2Phi = m2Phi2; l2Energy = m2Energy2;
+					l3Pt = e1Pt2; l3Eta = e1Eta2; l3Phi = e1Phi2; l3Energy = e1Energy2;
+					l4Pt = e2Pt2; l4Eta = e2Eta2; l4Phi = e2Phi2; l4Energy = e2Energy2;
+					l1PdgId = m1PdgId2; l2PdgId = m2PdgId2;
+					l3PdgId = e1PdgId2; l4PdgId = e2PdgId2;
+				}
       }
       else if (_channel == "mmmm"){
+				Z1mass = m1_m2_Mass2; Z2mass = m3_m4_Mass2;
         l1Pt = m1Pt2; l1Eta = m1Eta2; l1Phi = m1Phi2; l1Energy = m1Energy2;
         l2Pt = m2Pt2; l2Eta = m2Eta2; l2Phi = m2Phi2; l2Energy = m2Energy2;
         l3Pt = m3Pt2; l3Eta = m3Eta2; l3Phi = m3Phi2; l3Energy = m3Energy2;
@@ -260,7 +274,7 @@ void CompLooper::Loop(){
         l1PdgId = m1PdgId2; l2PdgId = m2PdgId2;
         l3PdgId = m3PdgId2; l4PdgId = m4PdgId2;
       }
-      // Set electron pairs
+      // Set primary pair
       if (l1PdgId > 0){
         lp1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
         ln1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
@@ -269,7 +283,7 @@ void CompLooper::Loop(){
         ln1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
         lp1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
       }
-      // Set muon pairs
+      // Set secondary pair
       if (l3PdgId > 0){
         lp2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
         ln2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
@@ -278,49 +292,56 @@ void CompLooper::Loop(){
         ln2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
         lp2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
       }
-      // Set primary/secondary pairs
-      if ( std::abs((lp2+ln2).M() - Z_MASS) < std::abs((lp1+ln1).M() - Z_MASS) ){
-        ROOT::Math::PtEtaPhiEVector lp1_copy = lp1, ln1_copy = ln1;
-        lp1 = lp2;
-        ln1 = ln2;
-        lp2 = lp1_copy;
-        ln2 = ln1_copy;
-      }
       // Sort by Pt
+			/*
       std::vector<ROOT::Math::PtEtaPhiEVector> leptons{lp1, ln1, lp2, ln2};
       std::sort(leptons.begin(), leptons.end(), 
         [](const ROOT::Math::PtEtaPhiEVector &v1, const ROOT::Math::PtEtaPhiEVector &v2){
           return v1.Pt() > v2.Pt();
         }
       );
+			*/
 
-      Float_t weight = _isT2MC? genWeight2 : 1.;
+			if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+				Float_t weight = _isT2MC? genWeight2 : 1.;
 
-      // Inv Mass (12, 34)
-      InvMass12_2->Fill((lp1+ln1).M(), weight);
-      InvMass34_2->Fill((lp2+ln2).M(), weight);
+				InvMass4l_2->Fill(Mass2, weight);
+				InvMass12_2->Fill(Z1mass, weight);
+				InvMass34_2->Fill(Z2mass, weight);
 
-      // PolCosTheta
-      //PolCosTheta_12->Fill(GetPolCosTheta(lp1, ln1), weight);
-      //PolCosTheta_34->Fill(GetPolCosTheta(lp2, ln2), weight);
+				LepEnergy_2->Fill(l1Energy, weight);
+				LepEnergy_2->Fill(l2Energy, weight);
+				LepEnergy_2->Fill(l3Energy, weight);
+				LepEnergy_2->Fill(l4Energy, weight);
+
+				LepPt_2->Fill(l1Pt, weight);
+				LepPt_2->Fill(l2Pt, weight);
+				LepPt_2->Fill(l3Pt, weight);
+				LepPt_2->Fill(l4Pt, weight);
+
+				PolCosTheta12_2->Fill(GetPolCosTheta(lp1, ln1), weight);
+				PolCosTheta34_2->Fill(GetPolCosTheta(lp2, ln2), weight);
+			}
     }
   }
   std::cout << "End looping." << std::endl;
 
 	// Formatting
   InvMass4l_1->SetMinimum(0);
-  Z2Mass_1->SetMinimum(0);
   InvMass12_1->SetMinimum(0);
   InvMass34_1->SetMinimum(0);
   LepEnergy_1->SetMinimum(0);
   LepPt_1->SetMinimum(0);
+	PolCosTheta12_1->SetMinimum(0);
+	PolCosTheta34_1->SetMinimum(0);
 
   InvMass4l_2->SetMinimum(0);
-  Z2Mass_2->SetMinimum(0);
   InvMass12_2->SetMinimum(0);
   InvMass34_2->SetMinimum(0);
   LepEnergy_2->SetMinimum(0);
   LepPt_2->SetMinimum(0);
+	PolCosTheta12_2->SetMinimum(0);
+	PolCosTheta34_2->SetMinimum(0);
 
   // Scaling
   if (!_norm){
@@ -329,38 +350,42 @@ void CompLooper::Loop(){
       std::cout << "summedWeights1=" << summedWeights1 << std::endl;
       float histScaling1 = _xsec1 * _lumi / summedWeights1;
       InvMass4l_1->Scale(histScaling1);
-      Z2Mass_1->Scale(histScaling1);
       InvMass12_1->Scale(histScaling1);
       InvMass34_1->Scale(histScaling1);
       LepEnergy_1->Scale(histScaling1);
       LepPt_1->Scale(histScaling1);
+			PolCosTheta12_1->Scale(histScaling1);
+			PolCosTheta34_1->Scale(histScaling1);
     }
     if (_isT2MC){
       _ntuple2->GetEntry(0);
       std::cout << "summedWeights2=" << summedWeights2 << std::endl;
       float histScaling2 = _xsec2 * _lumi / summedWeights2;
       InvMass4l_2->Scale(histScaling2);
-      Z2Mass_2->Scale(histScaling2);
       InvMass12_2->Scale(histScaling2);
       InvMass34_2->Scale(histScaling2);
       LepEnergy_2->Scale(histScaling2);
       LepPt_2->Scale(histScaling2);
+			PolCosTheta12_2->Scale(histScaling2);
+			PolCosTheta34_2->Scale(histScaling2);
     }
   }
   else{
     InvMass4l_1->Scale(1.0/InvMass4l_1->Integral());
-    Z2Mass_1->Scale(1.0/Z2Mass_1->Integral());
     InvMass12_1->Scale(1.0/InvMass12_1->Integral());
     InvMass34_1->Scale(1.0/InvMass34_1->Integral());
     LepEnergy_1->Scale(1.0/LepEnergy_1->Integral()); 
     LepPt_1->Scale(1.0/LepPt_1->Integral());
+		PolCosTheta12_1->Scale(1.0/PolCosTheta12_1->Integral());
+		PolCosTheta34_1->Scale(1.0/PolCosTheta34_1->Integral());
 
     InvMass4l_2->Scale(1.0/InvMass4l_2->Integral());
-    Z2Mass_2->Scale(1.0/Z2Mass_2->Integral());
     InvMass12_2->Scale(1.0/InvMass12_2->Integral());
     InvMass34_2->Scale(1.0/InvMass34_2->Integral());
     LepEnergy_2->Scale(1.0/LepEnergy_2->Integral()); 
     LepPt_2->Scale(1.0/LepPt_2->Integral());
+		PolCosTheta12_2->Scale(1.0/PolCosTheta12_2->Integral());
+		PolCosTheta34_2->Scale(1.0/PolCosTheta34_2->Integral());
   }
   
   // Drawing
@@ -399,27 +424,30 @@ void CompLooper::Loop(){
     };
 
     Draw(InvMass4l_1);
-    Draw(Z2Mass_1);
     Draw(InvMass12_1);
     Draw(InvMass34_1);
     Draw(LepEnergy_1);
     Draw(LepPt_1);
+		Draw(PolCosTheta12_1);
+		Draw(PolCosTheta34_1);
 
     Draw(InvMass4l_2);
-    Draw(Z2Mass_2);
     Draw(InvMass12_2);
     Draw(InvMass34_2);
     Draw(LepEnergy_2);
     Draw(LepPt_2);
+		Draw(PolCosTheta12_2);
+		Draw(PolCosTheta34_2);
 
     TLegend *legend;
 
     DrawSame(InvMass4l_1, InvMass4l_2);
-    DrawSame(Z2Mass_1, Z2Mass_2);
     DrawSame(InvMass12_1, InvMass12_2);
     DrawSame(InvMass34_1, InvMass34_2);
     DrawSame(LepEnergy_1, LepEnergy_2);
     DrawSame(LepPt_1, LepPt_2);
+		DrawSame(PolCosTheta12_1, PolCosTheta12_2);
+		DrawSame(PolCosTheta34_1, PolCosTheta34_2);
   }
 
   // Writing
@@ -429,18 +457,20 @@ void CompLooper::Loop(){
   if (subdir != nullptr) subdir->cd();
 
   InvMass4l_1->Write();
-  Z2Mass_1->Write();
   InvMass12_1->Write();
   InvMass34_1->Write();
   LepEnergy_1->Write();
   LepPt_1->Write();
+	PolCosTheta12_1->Write();
+	PolCosTheta34_1->Write();
 
   InvMass4l_2->Write();
-  Z2Mass_2->Write();
   InvMass12_2->Write();
   InvMass34_2->Write();
   LepEnergy_2->Write();
   LepPt_2->Write();
+	PolCosTheta12_2->Write();
+	PolCosTheta34_2->Write();
 
   // Ratio Plots
   if (ratioplot || _makeRatios){

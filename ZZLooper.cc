@@ -92,8 +92,8 @@ void ZZLooper::Loop(){
   TH1F *InvMass34 = new TH1F("InvMass34", "Secondary Lepton Pair Invariant Mass", InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy = new TH1F("LepEnergy", "Lepton Energy", 60, 0, 600);
   TH1F *LepPt = new TH1F("LepPt", "Lepton Transverse Momentum", LepPt_binning.size()-1, &LepPt_binning[0]);
-  TH1F *PolCosTheta_12 = new TH1F("PolCosTheta_12", "cos#theta_{12}*", 50, -1, 1);
-  TH1F *PolCosTheta_34 = new TH1F("PolCosTheta_34", "cos#theta_{34}*", 50, -1, 1);
+  TH1F *PolCosTheta12 = new TH1F("PolCosTheta12", "cos#theta_{12}*", 50, -1, 1);
+  TH1F *PolCosTheta34 = new TH1F("PolCosTheta34", "cos#theta_{34}*", 50, -1, 1);
   SetTitles(InvMass4l, "m_{4l} [GeV]");
   SetTitles(InvMass12, "m_{Z_{1}} [GeV]");
   SetTitles(InvMass34, "m_{Z_{2}} [GeV]");
@@ -101,19 +101,9 @@ void ZZLooper::Loop(){
   SetTitles(LepPt, "p_{l,T} [GeV]");
 
 
-  // Filling histograms
-  std::string weightstr = _isMC? "genWeight" : "1";
-  _ntuple->Draw("Mass >> InvMass4l", weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sEnergy >> LepEnergy", l1.c_str()), weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sEnergy >>+LepEnergy", l2.c_str()), weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sEnergy >>+LepEnergy", l3.c_str()), weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sEnergy >>+LepEnergy", l4.c_str()), weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sPt >> LepPt", l1.c_str()), weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sPt >>+LepPt", l2.c_str()), weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sPt >>+LepPt", l3.c_str()), weightstr.c_str(), "goff");
-  _ntuple->Draw(TString::Format("%sPt >>+LepPt", l4.c_str()), weightstr.c_str(), "goff");
   Long64_t nentries = _ntuple->GetEntries();
   ROOT::Math::PtEtaPhiEVector lp1, ln1, lp2, ln2;
+	Float_t Z1mass, Z2mass;
   Float_t l1Pt, l1Eta, l1Phi, l1Energy;
   Float_t l2Pt, l2Eta, l2Phi, l2Energy;
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
@@ -123,6 +113,7 @@ void ZZLooper::Loop(){
   for (unsigned int i=0; i<nentries; i++){
     _ntuple->GetEntry(i);
     if (_channel == "eeee"){
+			Z1mass = e1_e2_Mass; Z2mass = e3_e4_Mass;
       l1Pt = e1Pt; l1Eta = e1Eta; l1Phi = e1Phi; l1Energy = e1Energy;
       l2Pt = e2Pt; l2Eta = e2Eta; l2Phi = e2Phi; l2Energy = e2Energy;
       l3Pt = e3Pt; l3Eta = e3Eta; l3Phi = e3Phi; l3Energy = e3Energy;
@@ -131,14 +122,27 @@ void ZZLooper::Loop(){
       l3PdgId = e3PdgId; l4PdgId = e4PdgId;
     }
     else if (_channel == "eemm"){
-      l1Pt = e1Pt; l1Eta = e1Eta; l1Phi = e1Phi; l1Energy = e1Energy;
-      l2Pt = e2Pt; l2Eta = e2Eta; l2Phi = e2Phi; l2Energy = e2Energy;
-      l3Pt = m1Pt; l3Eta = m1Eta; l3Phi = m1Phi; l3Energy = m1Energy;
-      l4Pt = m2Pt; l4Eta = m2Eta; l4Phi = m2Phi; l4Energy = m2Energy;
-      l1PdgId = e1PdgId; l2PdgId = e2PdgId;
-      l3PdgId = m1PdgId; l4PdgId = m2PdgId;
+			if (std::fabs(e1_e2_Mass - Z_MASS) < std::fabs(m1_m2_Mass - Z_MASS)){
+				Z1mass = e1_e2_Mass; Z2mass = m1_m2_Mass;
+				l1Pt = e1Pt; l1Eta = e1Eta; l1Phi = e1Phi; l1Energy = e1Energy;
+				l2Pt = e2Pt; l2Eta = e2Eta; l2Phi = e2Phi; l2Energy = e2Energy;
+				l3Pt = m1Pt; l3Eta = m1Eta; l3Phi = m1Phi; l3Energy = m1Energy;
+				l4Pt = m2Pt; l4Eta = m2Eta; l4Phi = m2Phi; l4Energy = m2Energy;
+				l1PdgId = e1PdgId; l2PdgId = e2PdgId;
+				l3PdgId = m1PdgId; l4PdgId = m2PdgId;
+			}
+			else{
+				Z1mass = m1_m2_Mass; Z2mass = e1_e2_Mass;
+				l1Pt = m1Pt; l1Eta = m1Eta; l1Phi = m1Phi; l1Energy = m1Energy;
+				l2Pt = m2Pt; l2Eta = m2Eta; l2Phi = m2Phi; l2Energy = m2Energy;
+				l3Pt = e1Pt; l3Eta = e1Eta; l3Phi = e1Phi; l3Energy = e1Energy;
+				l4Pt = e2Pt; l4Eta = e2Eta; l4Phi = e2Phi; l4Energy = e2Energy;
+				l1PdgId = m1PdgId; l2PdgId = m2PdgId;
+				l3PdgId = e1PdgId; l4PdgId = e2PdgId;
+			}
     }
     else if (_channel == "mmmm"){
+			Z1mass = m1_m2_Mass; Z2mass = m3_m4_Mass;
       l1Pt = m1Pt; l1Eta = m1Eta; l1Phi = m1Phi; l1Energy = m1Energy;
       l2Pt = m2Pt; l2Eta = m2Eta; l2Phi = m2Phi; l2Energy = m2Energy;
       l3Pt = m3Pt; l3Eta = m3Eta; l3Phi = m3Phi; l3Energy = m3Energy;
@@ -146,7 +150,7 @@ void ZZLooper::Loop(){
       l1PdgId = m1PdgId; l2PdgId = m2PdgId;
       l3PdgId = m3PdgId; l4PdgId = m4PdgId;
     }
-    // Set electron pairs
+    // Set primary pair
     if (l1PdgId > 0){
       lp1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
       ln1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
@@ -155,7 +159,7 @@ void ZZLooper::Loop(){
       ln1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
       lp1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
     }
-    // Set muon pairs
+    // Set secondary pair
     if (l3PdgId > 0){
       lp2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
       ln2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
@@ -164,31 +168,36 @@ void ZZLooper::Loop(){
       ln2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
       lp2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
     }
-    // Set primary/secondary pairs
-    if (_channel == "eemm" && std::fabs((lp2+ln2).M() - Z_MASS) < std::fabs((lp1+ln1).M() - Z_MASS) ){
-      ROOT::Math::PtEtaPhiEVector lp1_copy = lp1, ln1_copy = ln1;
-      lp1 = lp2;
-      ln1 = ln2;
-      lp2 = lp1_copy;
-      ln2 = ln1_copy;
-    }
     // Sort by Pt
+		/*
     std::vector<ROOT::Math::PtEtaPhiEVector> leptons{lp1, ln1, lp2, ln2};
     std::sort(leptons.begin(), leptons.end(), 
       [](const ROOT::Math::PtEtaPhiEVector &v1, const ROOT::Math::PtEtaPhiEVector &v2){
         return v1.Pt() > v2.Pt();
       }
     );
+		*/
 
-    Float_t weight = _isMC? genWeight : 1.;
+		if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+			Float_t weight = _isMC? genWeight : 1.;
 
-    // Inv Mass (12, 34)
-    InvMass12->Fill((lp1+ln1).M(), weight);
-    InvMass34->Fill((lp2+ln2).M(), weight);
+			InvMass4l->Fill(Mass, weight);
+			InvMass12->Fill(Z1mass, weight);
+			InvMass34->Fill(Z2mass, weight);
 
-    // PolCosTheta
-    PolCosTheta_12->Fill(GetPolCosTheta(lp1, ln1), weight);
-    PolCosTheta_34->Fill(GetPolCosTheta(lp2, ln2), weight);
+			LepEnergy->Fill(l1Energy, weight);
+			LepEnergy->Fill(l2Energy, weight);
+			LepEnergy->Fill(l3Energy, weight);
+			LepEnergy->Fill(l4Energy, weight);
+
+			LepPt->Fill(l1Pt, weight);
+			LepPt->Fill(l2Pt, weight);
+			LepPt->Fill(l3Pt, weight);
+			LepPt->Fill(l4Pt, weight);
+
+			PolCosTheta12->Fill(GetPolCosTheta(lp1, ln1), weight);
+			PolCosTheta34->Fill(GetPolCosTheta(lp2, ln2), weight);
+		}
   }
   std::cout << "End looping." << std::endl;
 
@@ -196,8 +205,8 @@ void ZZLooper::Loop(){
   InvMass4l->SetMinimum(0);
   InvMass12->SetMinimum(0);
   InvMass34->SetMinimum(0);
-  PolCosTheta_12->SetMinimum(0);
-  PolCosTheta_34->SetMinimum(0);
+  PolCosTheta12->SetMinimum(0);
+  PolCosTheta34->SetMinimum(0);
   LepEnergy->SetMinimum(0);
   LepPt->SetMinimum(0);
 
@@ -206,8 +215,8 @@ void ZZLooper::Loop(){
     InvMass4l->Scale(1.0/InvMass4l->Integral());
     InvMass12->Scale(1.0/InvMass12->Integral());
     InvMass34->Scale(1.0/InvMass34->Integral());
-    PolCosTheta_12->Scale(1.0/PolCosTheta_12->Integral());
-    PolCosTheta_34->Scale(1.0/PolCosTheta_34->Integral());
+    PolCosTheta12->Scale(1.0/PolCosTheta12->Integral());
+    PolCosTheta34->Scale(1.0/PolCosTheta34->Integral());
     LepEnergy->Scale(1.0/LepEnergy->Integral());
     LepPt->Scale(1.0/LepPt->Integral());
   }
@@ -217,8 +226,8 @@ void ZZLooper::Loop(){
     InvMass4l->Scale(histScaling);
     InvMass12->Scale(histScaling);
     InvMass34->Scale(histScaling);
-    PolCosTheta_12->Scale(histScaling);
-    PolCosTheta_34->Scale(histScaling);
+    PolCosTheta12->Scale(histScaling);
+    PolCosTheta34->Scale(histScaling);
     LepEnergy->Scale(histScaling);
     LepPt->Scale(histScaling);
   }
@@ -234,8 +243,8 @@ void ZZLooper::Loop(){
     Draw(InvMass4l);
     Draw(InvMass12);
     Draw(InvMass34);
-    Draw(PolCosTheta_12);
-    Draw(PolCosTheta_34);
+    Draw(PolCosTheta12);
+    Draw(PolCosTheta34);
     Draw(LepEnergy);
     Draw(LepPt);
   }
@@ -249,8 +258,8 @@ void ZZLooper::Loop(){
   InvMass4l->Write();
   InvMass12->Write();
   InvMass34->Write();
-  PolCosTheta_12->Write();
-  PolCosTheta_34->Write();
+  PolCosTheta12->Write();
+  PolCosTheta34->Write();
   LepEnergy->Write();
   LepPt->Write();
   
