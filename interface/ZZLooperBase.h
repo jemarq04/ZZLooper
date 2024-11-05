@@ -198,7 +198,7 @@ class ZZLooperBase{
     //Float_t e3_e4_EnergyNoFSR;
     //Float_t e3_e4_Eta;
     //Float_t e3_e4_EtaNoFSR;
-    //Float_t e3_e4_Mass;
+    Float_t e3_e4_Mass;
     //Float_t e3_e4_MassNoFSR;
     //Float_t e3_e4_Mt;
     //Float_t e3_e4_MtToMET;
@@ -378,7 +378,7 @@ class ZZLooperBase{
     //Float_t m3_m4_EnergyNoFSR;
     //Float_t m3_m4_Eta;
     //Float_t m3_m4_EtaNoFSR;
-    //Float_t m3_m4_Mass;
+    Float_t m3_m4_Mass;
     //Float_t m3_m4_MassNoFSR;
     //Float_t m3_m4_Mt;
     //Float_t m3_m4_MtToMET;
@@ -534,7 +534,7 @@ class ZZLooperBase{
     //Float_t e1_e2_EnergyNoFSR;
     //Float_t e1_e2_Eta;
     //Float_t e1_e2_EtaNoFSR;
-    //Float_t e1_e2_Mass;
+    Float_t e1_e2_Mass;
     //Float_t e1_e2_MassNoFSR;
     //Float_t e1_e2_Mt;
     //Float_t e1_e2_MtToMET;
@@ -680,7 +680,7 @@ class ZZLooperBase{
     //Float_t m1_m2_EnergyNoFSR;
     //Float_t m1_m2_Eta;
     //Float_t m1_m2_EtaNoFSR;
-    //Float_t m1_m2_Mass;
+    Float_t m1_m2_Mass;
     //Float_t m1_m2_MassNoFSR;
     //Float_t m1_m2_Mt;
     //Float_t m1_m2_MtToMET;
@@ -1121,7 +1121,7 @@ void ZZLooperBase::Init(){
     //_ntuple->SetBranchAddress("e3_e4_EnergyNoFSR", &e3_e4_EnergyNoFSR);
     //_ntuple->SetBranchAddress("e3_e4_Eta", &e3_e4_Eta);
     //_ntuple->SetBranchAddress("e3_e4_EtaNoFSR", &e3_e4_EtaNoFSR);
-    //_ntuple->SetBranchAddress("e3_e4_Mass", &e3_e4_Mass);
+    _ntuple->SetBranchAddress("e3_e4_Mass", &e3_e4_Mass);
     //_ntuple->SetBranchAddress("e3_e4_MassNoFSR", &e3_e4_MassNoFSR);
     //_ntuple->SetBranchAddress("e3_e4_Mt", &e3_e4_Mt);
     //_ntuple->SetBranchAddress("e3_e4_MtToMET", &e3_e4_MtToMET);
@@ -1323,7 +1323,7 @@ void ZZLooperBase::Init(){
     //_ntuple->SetBranchAddress("m3_m4_EnergyNoFSR", &m3_m4_EnergyNoFSR);
     //_ntuple->SetBranchAddress("m3_m4_Eta", &m3_m4_Eta);
     //_ntuple->SetBranchAddress("m3_m4_EtaNoFSR", &m3_m4_EtaNoFSR);
-    //_ntuple->SetBranchAddress("m3_m4_Mass", &m3_m4_Mass);
+    _ntuple->SetBranchAddress("m3_m4_Mass", &m3_m4_Mass);
     //_ntuple->SetBranchAddress("m3_m4_MassNoFSR", &m3_m4_MassNoFSR);
     //_ntuple->SetBranchAddress("m3_m4_Mt", &m3_m4_Mt);
     //_ntuple->SetBranchAddress("m3_m4_MtToMET", &m3_m4_MtToMET);
@@ -1500,7 +1500,7 @@ void ZZLooperBase::Init(){
     //_ntuple->SetBranchAddress("e1_e2_EnergyNoFSR", &e1_e2_EnergyNoFSR);
     //_ntuple->SetBranchAddress("e1_e2_Eta", &e1_e2_Eta);
     //_ntuple->SetBranchAddress("e1_e2_EtaNoFSR", &e1_e2_EtaNoFSR);
-    //_ntuple->SetBranchAddress("e1_e2_Mass", &e1_e2_Mass);
+    _ntuple->SetBranchAddress("e1_e2_Mass", &e1_e2_Mass);
     //_ntuple->SetBranchAddress("e1_e2_MassNoFSR", &e1_e2_MassNoFSR);
     //_ntuple->SetBranchAddress("e1_e2_Mt", &e1_e2_Mt);
     //_ntuple->SetBranchAddress("e1_e2_MtToMET", &e1_e2_MtToMET);
@@ -1667,7 +1667,7 @@ void ZZLooperBase::Init(){
     //_ntuple->SetBranchAddress("m1_m2_EnergyNoFSR", &m1_m2_EnergyNoFSR);
     //_ntuple->SetBranchAddress("m1_m2_Eta", &m1_m2_Eta);
     //_ntuple->SetBranchAddress("m1_m2_EtaNoFSR", &m1_m2_EtaNoFSR);
-    //_ntuple->SetBranchAddress("m1_m2_Mass", &m1_m2_Mass);
+    _ntuple->SetBranchAddress("m1_m2_Mass", &m1_m2_Mass);
     //_ntuple->SetBranchAddress("m1_m2_MassNoFSR", &m1_m2_MassNoFSR);
     //_ntuple->SetBranchAddress("m1_m2_Mt", &m1_m2_Mt);
     //_ntuple->SetBranchAddress("m1_m2_MtToMET", &m1_m2_MtToMET);
