@@ -67,6 +67,7 @@ void ZZLooper::Loop(){
     plotdir = opendir(dirname.c_str());
     if (!plotdir) mkdir(dirname.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     else closedir(plotdir);
+    MakeIndexFile(dirname);
   }
 
   // Set values based on options

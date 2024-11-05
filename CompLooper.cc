@@ -84,14 +84,17 @@ void CompLooper::Loop(){
     plotdir = opendir(dirname.c_str());
     if (!plotdir) mkdir(dirname.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     else closedir(plotdir);
+    MakeIndexFile(dirname);
 
 		plotdir = opendir((dirname + "/" + _label1).c_str());
 		if (!plotdir) mkdir((dirname + "/" + _label1).c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 		else closedir(plotdir);
+    MakeIndexFile(dirname + "/" + _label1);
 
 		plotdir = opendir((dirname + "/" + _label2).c_str());
 		if (!plotdir) mkdir((dirname + "/" + _label2).c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 		else closedir(plotdir);
+    MakeIndexFile(dirname + "/" + _label2);
   }
 
   // Set values based on options

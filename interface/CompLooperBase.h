@@ -37,6 +37,8 @@ class CompLooperBase{
     double GetDeltaPhi(double phi1, double phi2) const;
     double GetPolCosTheta(const ROOT::Math::PtEtaPhiEVector &lep, const ROOT::Math::PtEtaPhiEVector &z) const;
 
+    void MakeIndexFile(std::string filename) const;
+
     const double Z_MASS = 91.187; // GeV, given by PDG 2020
 
     TFile *_infile1, *_infile2;
@@ -3632,6 +3634,17 @@ double CompLooperBase::GetPolCosTheta(const ROOT::Math::PtEtaPhiEVector &lp, con
   ROOT::Math::Boost boost(z.BoostToCM());
   ROOT::Math::PtEtaPhiEVector lep_boost = boost(ln);
   return lep_boost.Vect().Dot(z.Vect()) / std::sqrt( lep_boost.Vect().Mag2() * z.Vect().Mag2() );
+}
+
+void CompLooperBase::MakeIndexFile(std::string filename) const{
+  try{
+    std::ifstream fin("inputs/index.php");
+    std::ofstream fout((filename + "/index.php").c_str());
+    fout << fin.rdbuf();
+  }
+  catch (...){
+    std::cerr << "Error making index file " << filename << std::endl;
+  }
 }
 
 #endif//COMPLOOPERBASE_H
