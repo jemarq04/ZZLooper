@@ -355,8 +355,8 @@ void CompLooper::Loop(){
   if (!_norm){
     if (_isT1MC){
       _ntuple1->GetEntry(0);
-      std::cout << "summedWeights1=" << summedWeights1 << std::endl;
-      float histScaling1 = _xsec1 * _lumi / summedWeights1;
+      //std::cout << "summedWeights1=" << summedWeights1 << std::endl;
+      float histScaling1 = _kfac1 * _xsec1 * _lumi / summedWeights1;
       InvMass4l_1->Scale(histScaling1);
       InvMass12_1->Scale(histScaling1);
       InvMass34_1->Scale(histScaling1);
@@ -367,8 +367,8 @@ void CompLooper::Loop(){
     }
     if (_isT2MC){
       _ntuple2->GetEntry(0);
-      std::cout << "summedWeights2=" << summedWeights2 << std::endl;
-      float histScaling2 = _xsec2 * _lumi / summedWeights2;
+      //std::cout << "summedWeights2=" << summedWeights2 << std::endl;
+      float histScaling2 = _kfac2 * _xsec2 * _lumi / summedWeights2;
       InvMass4l_2->Scale(histScaling2);
       InvMass12_2->Scale(histScaling2);
       InvMass34_2->Scale(histScaling2);

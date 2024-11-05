@@ -222,7 +222,7 @@ void ZZLooper::Loop(){
   }
   else if (_isMC){
     _ntuple->GetEntry(0);
-    float histScaling = _xsec * _lumi / summedWeights;
+    float histScaling = _kfac * _xsec * _lumi / summedWeights;
     InvMass4l->Scale(histScaling);
     InvMass12->Scale(histScaling);
     InvMass34->Scale(histScaling);
