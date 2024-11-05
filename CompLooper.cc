@@ -84,6 +84,14 @@ void CompLooper::Loop(){
     plotdir = opendir(dirname.c_str());
     if (!plotdir) mkdir(dirname.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     else closedir(plotdir);
+
+		plotdir = opendir((dirname + "/" + _label1).c_str());
+		if (!plotdir) mkdir((dirname + "/" + _label1).c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		else closedir(plotdir);
+
+		plotdir = opendir((dirname + "/" + _label2).c_str());
+		if (!plotdir) mkdir((dirname + "/" + _label2).c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		else closedir(plotdir);
   }
 
   // Set values based on options
@@ -393,9 +401,12 @@ void CompLooper::Loop(){
     c->cd();
     std::vector<std::string> labels = {_label1, _label2};
 
-    auto Draw = [&c, &dirname, _filetype=_filetype](TH1* hist){
+    auto Draw = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist, int labelNum){
+			int idx = labelNum - 1;
+			if (idx < 0) idx = 0;
+			else if (idx >= labels.size()) idx = labels.size()-1;
       hist->Draw("hist");
-      c->SaveAs((dirname + "/" + hist->GetName() + _filetype).c_str());
+      c->SaveAs((dirname + "/" + labels[idx] + "/" + hist->GetName() + _filetype).c_str());
     };
     auto DrawSame = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist1, TH1* hist2){
       std::string histname = hist1->GetName();
@@ -423,21 +434,21 @@ void CompLooper::Loop(){
       c->SaveAs((dirname + "/" + histname + _filetype).c_str());
     };
 
-    Draw(InvMass4l_1);
-    Draw(InvMass12_1);
-    Draw(InvMass34_1);
-    Draw(LepEnergy_1);
-    Draw(LepPt_1);
-		Draw(PolCosTheta12_1);
-		Draw(PolCosTheta34_1);
+    Draw(InvMass4l_1, 1);
+    Draw(InvMass12_1, 1);
+    Draw(InvMass34_1, 1);
+    Draw(LepEnergy_1, 1);
+    Draw(LepPt_1, 1);
+		Draw(PolCosTheta12_1, 1);
+		Draw(PolCosTheta34_1, 1);
 
-    Draw(InvMass4l_2);
-    Draw(InvMass12_2);
-    Draw(InvMass34_2);
-    Draw(LepEnergy_2);
-    Draw(LepPt_2);
-		Draw(PolCosTheta12_2);
-		Draw(PolCosTheta34_2);
+    Draw(InvMass4l_2, 2);
+    Draw(InvMass12_2, 2);
+    Draw(InvMass34_2, 2);
+    Draw(LepEnergy_2, 2);
+    Draw(LepPt_2, 2);
+		Draw(PolCosTheta12_2, 2);
+		Draw(PolCosTheta34_2, 2);
 
     TLegend *legend;
 
@@ -492,10 +503,14 @@ int main(int nargs, char *argv[]){
     .help("if true, consider second input to be MC");
   parser.add_argument<double>("-l", "--lumi").def("7.561502251") //2022CD
     .help("data luminosity to scale MC in fb-1");
-  parser.add_argument<double>("-x", "--xsec1").def("1390")
+  parser.add_argument<double>("-x", "--xsec1").def("1390") //qqZZ
     .help("cross-section of given MC process in fb for first input");
-  parser.add_argument<double>("-X", "--xsec2").def("1390")
+  parser.add_argument<double>("-X", "--xsec2").def("1390") //qqZZ
     .help("cross-section of given MC process in fb for second input");
+	parser.add_argument<double>("-k", "--kfac1").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
+		.help("k-factor of given MC process for first input");
+	parser.add_argument<double>("-K", "--kfac2").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
+		.help("k-factor of given MC process for second input");
   parser.add_argument("-c", "--channel").choices("eeee,eemm,mmmm")
     .help("process only the specified channel, otherwise all");
   parser.add_argument<bool>("-n", "--norm").def("false")
@@ -529,11 +544,13 @@ int main(int nargs, char *argv[]){
       l.SetMC1();
       l.SetLumi(args["lumi"]);
       l.SetXsec1(args["xsec1"]);
+			l.SetKfac1(args["kfac1"]);
 		}
 		if (args["mc2"].is_true()){
       l.SetMC2();
       l.SetLumi(args["lumi"]);
       l.SetXsec2(args["xsec2"]);
+			l.SetKfac2(args["kfac2"]);
 		}
 		l.Loop();
 	}

@@ -21,6 +21,7 @@ class ZZLooperBase{
     void SetMC(bool isMC=true){_isMC = isMC;}
     void SetLumi(float lumi=1.){_lumi = lumi;}
     void SetXsec(float xsec=1.){_xsec = xsec;}
+		void SetKfac(float kfac=1.){_kfac = kfac;}
 
     virtual void Loop() = 0;
   protected:
@@ -34,7 +35,8 @@ class ZZLooperBase{
 
     TFile *_infile;
     TTree *_ntuple;
-    Float_t _xsec=1., _lumi=1.;
+		Float_t _lumi=1.;
+    Float_t _xsec=1., _kfac=1.;
     std::string _name;
     std::string _channel;
 

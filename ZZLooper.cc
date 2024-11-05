@@ -277,8 +277,10 @@ int main(int nargs, char *argv[]){
     .help("if true, add additional MC branches to slimmed ntuple");
   parser.add_argument<double>("-l", "--lumi").def("7.561502251") //2022CD
     .help("data luminosity to scale MC in fb-1");
-  parser.add_argument<double>("-x", "--xsec").def("1390")
+  parser.add_argument<double>("-x", "--xsec").def("1390") //qqZZ
     .help("cross-section of given MC process in fb");
+	parser.add_argument<double>("-k", "--kfafc").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
+		.help("k-factor of given MC process");
   parser.add_argument("-c", "--channel").choices("eeee,eemm,mmmm")
     .help("process only the specified channel, otherwise all");
   parser.add_argument<bool>("-n", "--norm").def("false")

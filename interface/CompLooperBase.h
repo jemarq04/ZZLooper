@@ -23,8 +23,11 @@ class CompLooperBase{
     void SetMC2(bool isMC=true){_isT2MC = isMC;}
     void SetXsec1(float xsec=1.){_xsec1 = xsec;}
     void SetXsec2(float xsec=1.){_xsec2 = xsec;}
+		void SetKfac1(float kfac=1.){_kfac1 = kfac;}
+		void SetKfac2(float kfac=1.){_kfac2 = kfac;}
     void SetMC(bool isMC1=true, bool isMC2=true){SetMC1(isMC1); SetMC2(isMC2);}
     void SetXsec(float xsec1=1., float xsec2=1.){SetXsec1(xsec1); SetXsec2(xsec2);}
+		void SetKfac(float kfac1=1., float kfac2=1.){SetKfac1(kfac1); SetKfac2(kfac2);}
 
     virtual void Loop() = 0;
   protected:
@@ -38,7 +41,9 @@ class CompLooperBase{
 
     TFile *_infile1, *_infile2;
     TTree *_ntuple1, *_ntuple2;
-    float _xsec1=1., _xsec2, _lumi=1.;
+		Float_t _lumi=1.;
+    Float_t _xsec1=1., _xsec2=1.;
+		Float_t _kfac1=1., _kfac2=1.;
     std::string _name;
     std::string _channel;
 
