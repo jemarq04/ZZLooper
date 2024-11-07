@@ -286,8 +286,8 @@ int main(int nargs, char *argv[]){
     .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
   parser.add_argument<bool>("-n", "--norm").def("false")
     .help("if true, scale histograms to 1");
-  parser.add_argument("-m", "--mode").def("UPDATE")
-    .help("option for creating the output file");
+  parser.add_argument<bool>("-r", "--recreate").def("false")
+    .help("if true, the output file will be recreated for the given channel(s)");
   parser.add_argument<bool>("--noplots").def("false")
     .help("if true, don't save plots to 'plots/' directory");
   parser.add_argument("-t", "--filetype").def(".png")
@@ -310,11 +310,12 @@ int main(int nargs, char *argv[]){
   }
 
   std::string filename = (std::string)"slimmed/" + args["label"].str() + ".root";
+  int index=0;
   for (std::string channel : channels){
     ZZLooper l(args["label"].c_str(), channel.c_str(), filename.c_str());
     if (!args["noplots"].is_true()) l.SetMakePlots();
     if (args["norm"].is_true()) l.SetNorm();
-    l.SetMode(args["mode"]);
+    if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.SetPlotFiletype(args["filetype"]);
 
     if (args["mc"].is_true()){
