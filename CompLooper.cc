@@ -514,12 +514,12 @@ int main(int nargs, char *argv[]){
 		.help("k-factor of given MC process for first input");
 	parser.add_argument<double>("-K", "--kfac2").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
 		.help("k-factor of given MC process for second input");
-  parser.add_argument("-c", "--channel").choices("eeee,eemm,mmmm")
-    .help("process only the specified channel, otherwise all");
+  parser.add_argument("-c", "--channels")
+    .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
   parser.add_argument<bool>("-n", "--norm").def("false")
     .help("if true, scale histograms to 1");
-  parser.add_argument("-m", "--mode").def("UPDATE")
-    .help("option for creating the output file");
+  parser.add_argument<bool>("-r", "--recreate").def("false")
+    .help("if true, the output file will be recreated for the given channel(s)");
   parser.add_argument<bool>("--noplots").def("false")
     .help("if true, don't save plots to 'plots/' directory");
   parser.add_argument("-t", "--filetype").def(".png")
@@ -534,13 +534,24 @@ int main(int nargs, char *argv[]){
 
   auto args = parser.parse_args();
 
-	for (std::string channel : {"eeee", "eemm", "mmmm"}){
-    if (!args["channel"].is_none() && args["channel"] != channel)
-      continue;
+  std::vector<std::string> channels;
+  if (args["channels"].is_none()) channels = {"eeee", "eemm", "mmmm"};
+  else{
+    std::stringstream ss(args["channels"]);
+    while (ss.good()){
+      std::string channel;
+      std::getline(ss, channel, ',');
+      if (channel != "eeee" && channel != "eemm" && channel != "mmmm")
+        parser.error("invalid channel " + channel);
+      channels.push_back(channel);
+    }
+  }
+  int index=0;
+	for (std::string channel : channels){
 		CompLooper l(args["name"].c_str(), channel.c_str(), args["label1"].c_str(), args["label2"].c_str());
     if (!args["noplots"].is_true()) l.SetMakePlots();
     if (args["norm"].is_true()) l.SetNorm();
-    l.SetMode(args["mode"]);
+    if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.SetPlotFiletype(args["filetype"]);
 		
 		if (args["mc1"].is_true()){
