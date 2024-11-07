@@ -537,7 +537,7 @@ int main(int nargs, char *argv[]){
   std::vector<std::string> channels;
   if (args["channels"].is_none()) channels = {"eeee", "eemm", "mmmm"};
   else{
-    std::stringstream ss(args["channels"]);
+    std::stringstream ss(args["channels"].str());
     while (ss.good()){
       std::string channel;
       std::getline(ss, channel, ',');
