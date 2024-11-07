@@ -322,6 +322,7 @@ int main(int nargs, char *argv[]){
       l.SetMC();
       l.SetLumi(args["lumi"]);
       l.SetXsec(args["xsec"]);
+      l.SetKfac(args["kfac"]);
     }
     l.Loop();
   }
