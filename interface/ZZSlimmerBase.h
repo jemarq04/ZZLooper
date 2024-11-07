@@ -17,6 +17,7 @@ class ZZSlimmerBase{
     ZZSlimmerBase(const char *name, const char *channel, const char *filenames="<NONE>");
     ~ZZSlimmerBase();
 
+		void SetVerbose(bool verbose=true){_verbose = verbose;}
     void SetMC(bool isMC=true){_isMC = isMC;}
 
     bool AddFromFile(const char *filenames);
@@ -28,7 +29,7 @@ class ZZSlimmerBase{
     std::string _name;
     std::string _channel;
 
-    bool _isMC = false;
+    bool _verbose = false, _isMC = false;
 };
 
 ZZSlimmerBase::ZZSlimmerBase(const char *name, const char *channel, const char *filenames)

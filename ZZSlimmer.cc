@@ -111,6 +111,8 @@ int main(int nargs, char *argv[]){
 	auto parser = argparse::ArgumentParser(nargs, argv)
 		.formatter_class(argparse::HelpFormatter::ArgumentDefaults);
 
+	parser.add_argument<bool>("-v", "--verbose").def("false")
+		.help("if true, script will be more verbose");
   parser.add_argument<bool>("--mc").def("false")
     .help("if true, add additional MC branches to slimmed ntuple");
   parser.add_argument("-c", "--channels")
@@ -145,7 +147,8 @@ int main(int nargs, char *argv[]){
     std::cout << "Slimming " << channel << " channel..." << std::endl;
     ZZSlimmer l(args["label"].c_str(), channel.c_str());
     l.AddFromFile(filename.c_str());
-    if (args["mc"].is_true()) l.SetMC();
+		l.SetVerbose(args["verbose"]);
+    l.SetMC(args["mc"]);
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.Slim();
   }
