@@ -22,7 +22,7 @@ class ZZSlimmer : public ZZSlimmerBase {
       _label2 = title2;
     }
     void SetMode(std::string mode){_mode = mode;}
-    void Loop();
+    void Slim();
   private:
     std::string _label1, _label2;
     std::string _mode = "update";
@@ -34,7 +34,7 @@ ZZSlimmer::ZZSlimmer(const char *name, const char *channel, const char *filename
 
 ZZSlimmer::~ZZSlimmer(){}
 
-void ZZSlimmer::Loop(){
+void ZZSlimmer::Slim(){
   // Setup
   TFile *outfile = new TFile(("slimmed/" + _name + ".root").c_str(), _mode.c_str());
   if (!outfile->IsOpen()) return;
@@ -147,7 +147,7 @@ int main(int nargs, char *argv[]){
     l.AddFromFile(filename.c_str());
     if (args["mc"].is_true()) l.SetMC();
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
-    l.Loop();
+    l.Slim();
   }
 	
   return 0;

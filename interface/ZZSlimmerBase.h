@@ -20,7 +20,7 @@ class ZZSlimmerBase{
     void SetMC(bool isMC=true){_isMC = isMC;}
 
     bool AddFromFile(const char *filenames);
-    virtual void Loop() = 0;
+    virtual void Slim() = 0;
   protected:
     const double Z_MASS = 91.187; // GeV, given by PDG 2020
 
