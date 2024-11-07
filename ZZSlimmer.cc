@@ -81,12 +81,12 @@ void ZZSlimmer::Slim(){
   cutstring = cutstring.substr(0, cutstring.size()-4);
   
   // Create trees
-  std::cout << "- Copying tree..." << std::endl;
+  if (_verbose) std::cout << "- Copying tree..." << std::endl;
   TTree *outtree = _ntuple->CopyTree(cutstring.c_str());
 
   // Add summedWeights
   if (_isMC){
-    std::cout << "- Adding summedWeights branch..." << std::endl;
+    if (_verbose) std::cout << "- Adding summedWeights branch..." << std::endl;
     Float_t summedWeights = *ROOT::RDataFrame(*_meta).Sum("summedWeights");
     TBranch *b_summedWeights = outtree->Branch("summedWeights", &summedWeights, "summedWeights/F");
     for (Long64_t i=0; i<outtree->GetEntries(); i++)
@@ -94,7 +94,7 @@ void ZZSlimmer::Slim(){
   }
   
   // Writing
-  std::cout << "- Writing..." << std::endl;
+  if (_verbose) std::cout << "- Writing..." << std::endl;
   outfile->cd();
   outfile->rmdir(_channel.c_str());
   TDirectory *subdir = outfile->mkdir(_channel.c_str());
