@@ -81,10 +81,12 @@ void ZZSlimmer::Loop(){
   cutstring = cutstring.substr(0, cutstring.size()-4);
   
   // Create trees
+  std::cout << "- Copying tree..." << std::endl;
   TTree *outtree = _ntuple->CopyTree(cutstring.c_str());
 
   // Add summedWeights
   if (_isMC){
+    std::cout << "- Adding summedWeights branch..." << std::endl;
     Float_t summedWeights = *ROOT::RDataFrame(*_meta).Sum("summedWeights");
     TBranch *b_summedWeights = outtree->Branch("summedWeights", &summedWeights, "summedWeights/F");
     for (Long64_t i=0; i<outtree->GetEntries(); i++)
@@ -92,6 +94,7 @@ void ZZSlimmer::Loop(){
   }
   
   // Writing
+  std::cout << "- Writing..." << std::endl;
   outfile->cd();
   outfile->rmdir(_channel.c_str());
   TDirectory *subdir = outfile->mkdir(_channel.c_str());
@@ -110,27 +113,40 @@ int main(int nargs, char *argv[]){
 
   parser.add_argument<bool>("--mc").def("false")
     .help("if true, add additional MC branches to slimmed ntuple");
-  parser.add_argument("-c", "--channel").choices("eeee,eemm,mmmm")
-    .help("process only the specified channel, otherwise all");
-  parser.add_argument("-m", "--mode").def("UPDATE")
-    .help("option for creating the output file");
+  parser.add_argument("-c", "--channels")
+    .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
+  parser.add_argument<bool>("-r", "--recreate").def("false")
+    .help("if true, the output file will be recreated for the given channel(s)");
   parser.add_argument("-f", "--filename")
     .help("use the given file for the list of datasets instead of searching by label");
   parser.add_argument("label").help("name for input dataset, as seen in 'inputs/*.dat");
 
   auto args = parser.parse_args();
 
+  std::vector<std::string> channels;
+  if (args["channels"].is_none()) channels = {"eeee", "eemm", "mmmm"};
+  else{
+    std::stringstream ss(args["channels"]);
+    while (ss.good()){
+      std::string channel;
+      std::getline(ss, channel, ',');
+      if (channel != "eeee" && channel != "eemm" && channel != "mmmm")
+        parser.error("invalid channel " + channel);
+      channels.push_back(channel);
+    }
+  }
+
   std::string filename = args["filename"].is_none()?
     (std::string)"inputs/" + args["label"].str() + ".dat" : args["filename"];
   std::cout << "Getting list of datasets from " << filename << std::endl;
-  for (std::string channel : {"eeee", "eemm", "mmmm"}){
-    if (!args["channel"].is_none() && args["channel"] != channel)
-      continue;
+
+  int index=0;
+  for (std::string channel : channels){
     std::cout << "Slimming " << channel << " channel..." << std::endl;
     ZZSlimmer l(args["label"].c_str(), channel.c_str());
     l.AddFromFile(filename.c_str());
     if (args["mc"].is_true()) l.SetMC();
-    l.SetMode(args["mode"]);
+    if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.Loop();
   }
 	
