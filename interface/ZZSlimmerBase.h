@@ -20,7 +20,7 @@ class ZZSlimmerBase{
 		void SetVerbose(bool verbose=true){_verbose = verbose;}
     void SetMC(bool isMC=true){_isMC = isMC;}
 
-    bool AddFromFile(const char *filenames);
+    void AddFromFile(const char *filenames);
     virtual void Slim() = 0;
   protected:
     const double Z_MASS = 91.187; // GeV, given by PDG 2020
@@ -48,19 +48,18 @@ ZZSlimmerBase::~ZZSlimmerBase(){
   if (_meta) delete _meta;
 }
 
-bool ZZSlimmerBase::AddFromFile(const char *filename){
+void ZZSlimmerBase::AddFromFile(const char *filename){
   std::ifstream infile(filename);
-  if (!infile.is_open()) return false;
-  bool added = true;
+  if (!infile.is_open()){
+    std::cerr << "Error opening file " << filename << std::endl;
+    return;
+  }
   for (std::string line; getline(infile, line);){
     if (line.size() && line[0] == '#') continue;
-    if (!_ntuple->AddFile(line.c_str()) || !_meta->AddFile(line.c_str())){
-      added = false;
-      break;
-    }
+    _ntuple->Add(line.c_str());
+    _meta->Add(line.c_str());
   }
   infile.close();
-  return added;
 }
 
 #endif//ZZSLIMMERBASE_H
