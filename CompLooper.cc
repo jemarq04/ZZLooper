@@ -538,9 +538,7 @@ int main(int nargs, char *argv[]){
   if (args["channels"].is_none()) channels = {"eeee", "eemm", "mmmm"};
   else{
     std::stringstream ss(args["channels"].str());
-    while (ss.good()){
-      std::string channel;
-      std::getline(ss, channel, ',');
+    for (std::string channel; std::getline(ss, channel, ',');){
       if (channel != "eeee" && channel != "eemm" && channel != "mmmm")
         parser.error("invalid channel " + channel);
       channels.push_back(channel);
