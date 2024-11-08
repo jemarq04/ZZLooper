@@ -45,7 +45,7 @@ print "<div class=\"dirlinks\">\n";
 print "<h2>Directories</h2>\n";
 print "<a href=\"../\">[parent]</a> ";
 foreach (glob("*") as $filename) {
-    if (is_dir($filename) && ($_SERVER['PHP_AUTH_USER'] == 'gpetrucc' || !preg_match("/^\..*|.*private.*/", $filename))) {
+    if (is_dir($filename) && ((isset($_SERVER['PHP_AUTH_USER']) && $_SERVER['PHP_AUTH_USER'] == 'gpetrucc') || !preg_match("/^\..*|.*private.*/", $filename))) {
         print " <a href=\"$filename\">[$filename]</a>";
     }
 }
@@ -59,11 +59,11 @@ foreach (array("00_README.txt", "README.txt", "readme.txt") as $readme) {
 ?>
 
 <h2><a name="plots">Plots</a></h2>
-<p><form>Filter: <input type="text" name="match" size="30" value="<?php if (isset($_GET['match'])) print htmlspecialchars($_GET['match']);  ?>" /><input type="Submit" value="Go" /><input type="checkbox"  name="regexp" <?php if ($_GET['regexp']) print "checked=\"checked\""?> >RegExp</input></form></p>
+<p><form>Filter: <input type="text" name="match" size="30" value="<?php if (isset($_GET['match'])) print htmlspecialchars($_GET['match']);  ?>" /><input type="Submit" value="Go" /><input type="checkbox"  name="regexp" <?php if (isset($_GET['regexp']) && $_GET['regexp']) print "checked=\"checked\""?> >RegExp</input></form></p>
 <div>
 <?php
 $displayed = array();
-if ($_GET['noplots']) {
+if (isset($_GET['noplots']) && $_GET['noplots']) {
     print "Plots will not be displayed.\n";
 } else {
     $other_exts = array('.pdf', '.cxx', '.eps', '.root', '.txt', '.dir', '.info');
@@ -98,7 +98,7 @@ if ($_GET['noplots']) {
 <?php
 $printed = false;
 foreach (glob("*") as $filename) {
-    if ($_GET['noplots'] || !in_array($filename, $displayed)) {
+    if ((isset($_GET['noplots']) && $_GET['noplots']) || !in_array($filename, $displayed)) {
         if (isset($_GET['match'])) {
              if (isset($_GET['regexp']) && $_GET['regexp']) {
                 if (!preg_match('/.*'.$_GET['match'].'.*/', $filename)) continue;
