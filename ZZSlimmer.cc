@@ -22,10 +22,12 @@ class ZZSlimmer : public ZZSlimmerBase {
       _label2 = title2;
     }
     void SetMode(std::string mode){_mode = mode;}
+    void SetNoCuts(bool nocuts=true){_nocuts = nocuts;}
     void Slim();
   private:
     std::string _label1, _label2;
     std::string _mode = "update";
+    bool _nocuts = false;
 };
 
 ZZSlimmer::ZZSlimmer(const char *name, const char *channel, const char *filenames)
@@ -39,6 +41,8 @@ void ZZSlimmer::Slim(){
   TFile *outfile = new TFile(("slimmed/" + _name + ".root").c_str(), _mode.c_str());
   if (!outfile->IsOpen()) return;
   outfile->cd();
+
+  if (_verbose) std::cout << "Slimming " << _channel << " channel..." << std::endl;
 	
   // Set values based on options
   std::string l1, l2, l3, l4;
@@ -53,7 +57,7 @@ void ZZSlimmer::Slim(){
   }
   
   // Activate certain branches
-  std::vector<std::string> branchnames = {"Mass"};
+  std::vector<std::string> branchnames = {"evt", "run", "nvtx", "lumi", "Mass"};
   for (std::string var : {"Pt", "Eta", "Phi", "Energy", "PdgId"}){
     branchnames.push_back(l1+var);
     branchnames.push_back(l2+var);
@@ -70,15 +74,19 @@ void ZZSlimmer::Slim(){
 
   // Define cutstring
   std::string cutstring = "";
-  for (std::string lep : {l1, l2, l3, l4}){
-    cutstring += lep + "ZZTightIDNoVtx && ";
-    _ntuple->SetBranchStatus((lep + "ZZTightIDNoVtx").c_str(), 1);
-    if (lep[0] == 'e'){
-      cutstring += lep + "SIP3D < 4.0 && "; 
-      _ntuple->SetBranchStatus((lep + "SIP3D").c_str(), 1);
+  if (!_nocuts){
+    if (_verbose) std::cout << "- Applying cuts..." << std::endl;
+    for (std::string lep : {l1, l2, l3, l4}){
+      cutstring += lep + "ZZTightIDNoVtx && ";
+      _ntuple->SetBranchStatus((lep + "ZZTightIDNoVtx").c_str(), 1);
+      if (lep[0] == 'e'){
+        cutstring += lep + "SIP3D < 4.0 && "; 
+        _ntuple->SetBranchStatus((lep + "SIP3D").c_str(), 1);
+      }
     }
+    cutstring = cutstring.substr(0, cutstring.size()-4);
   }
-  cutstring = cutstring.substr(0, cutstring.size()-4);
+  else if (_verbose) std::cout << "- Skipping cuts..." << std::endl;
   
   // Create trees
   if (_verbose) std::cout << "- Copying tree..." << std::endl;
@@ -102,6 +110,7 @@ void ZZSlimmer::Slim(){
   outtree->Write("ntuple");
 
   outfile->Close();
+  if (_verbose) std::cout << "- Done." << std::endl;
 }
 
 #ifndef __CLING__
@@ -113,6 +122,8 @@ int main(int nargs, char *argv[]){
 
 	parser.add_argument<bool>("-v", "--verbose").def("false")
 		.help("if true, script will be more verbose");
+  parser.add_argument<bool>("--nocuts").def("false")
+    .help("if true, don't apply any cuts to data");
   parser.add_argument<bool>("--mc").def("false")
     .help("if true, add additional MC branches to slimmed ntuple");
   parser.add_argument("-c", "--channels")
@@ -142,11 +153,11 @@ int main(int nargs, char *argv[]){
 
   int index=0;
   for (std::string channel : channels){
-    std::cout << "Slimming " << channel << " channel..." << std::endl;
     ZZSlimmer l(args["label"].c_str(), channel.c_str());
     l.AddFromFile(filename.c_str());
 		l.SetVerbose(args["verbose"]);
     l.SetMC(args["mc"]);
+    l.SetNoCuts(args["nocuts"]);
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.Slim();
   }
