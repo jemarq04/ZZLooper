@@ -74,19 +74,17 @@ void ZZSlimmer::Slim(){
 
   // Define cutstring
   std::string cutstring = "";
-  if (!_nocuts){
-    if (_verbose) std::cout << "- Applying cuts..." << std::endl;
-    for (std::string lep : {l1, l2, l3, l4}){
-      cutstring += lep + "ZZTightIDNoVtx && ";
-      _ntuple->SetBranchStatus((lep + "ZZTightIDNoVtx").c_str(), 1);
-      if (lep[0] == 'e'){
-        cutstring += lep + "SIP3D < 4.0 && "; 
-        _ntuple->SetBranchStatus((lep + "SIP3D").c_str(), 1);
-      }
+  for (std::string lep : {l1, l2, l3, l4}){
+    cutstring += lep + "ZZTightIDNoVtx && ";
+    _ntuple->SetBranchStatus((lep + "ZZTightIDNoVtx").c_str(), 1);
+    if (lep[0] == 'e'){
+      cutstring += lep + "SIP3D < 4.0 && "; 
+      _ntuple->SetBranchStatus((lep + "SIP3D").c_str(), 1);
     }
-    cutstring = cutstring.substr(0, cutstring.size()-4);
   }
-  else if (_verbose) std::cout << "- Skipping cuts..." << std::endl;
+  cutstring = cutstring.substr(0, cutstring.size()-4);
+  if (_nocuts) cutstring = "";
+  else if (_verbose) std::cout << "- Applying cuts..." << std::endl;
   
   // Create trees
   if (_verbose) std::cout << "- Copying tree..." << std::endl;
