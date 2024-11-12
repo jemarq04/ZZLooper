@@ -116,7 +116,7 @@ class ZZLooperBase{
     //Bool_t pvIsValid;
     //Int_t Charge;
     //Int_t PdgId;
-    //UInt_t lumi;
+    UInt_t lumi;
     //UInt_t nJets;
     //UInt_t nJets_jerDown;
     //UInt_t nJets_jerUp;
@@ -130,7 +130,7 @@ class ZZLooperBase{
     //UInt_t nZZTightMu;
     //UInt_t nvtx;
     //UInt_t run;
-    //ULong64_t evt;
+    ULong64_t evt;
     //std::vector<float> *jetDeepCSV = 0;
     //std::vector<float> *jetEta = 0;
     //std::vector<float> *jetEta_jerDown = 0;
@@ -993,7 +993,7 @@ void ZZLooperBase::Init(){
   //_ntuple->SetBranchAddress("pvIsValid", &pvIsValid);
   //_ntuple->SetBranchAddress("Charge", &Charge);
   //_ntuple->SetBranchAddress("PdgId", &PdgId);
-  //_ntuple->SetBranchAddress("lumi", &lumi);
+  _ntuple->SetBranchAddress("lumi", &lumi);
   //_ntuple->SetBranchAddress("nJets", &nJets);
   if (_isMC){
     //_ntuple->SetBranchAddress("nJets_jerDown", &nJets_jerDown);
@@ -1013,9 +1013,9 @@ void ZZLooperBase::Init(){
   //_ntuple->SetBranchAddress("nZZTightIsoElec", &nZZTightIsoElec);
   //_ntuple->SetBranchAddress("nZZTightIsoMu", &nZZTightIsoMu);
   //_ntuple->SetBranchAddress("nZZTightMu", &nZZTightMu);
-  //_ntuple->SetBranchAddress("nvtx", &nvtx);
-  //_ntuple->SetBranchAddress("run", &run);
-  //_ntuple->SetBranchAddress("evt", &evt);
+  _ntuple->SetBranchAddress("nvtx", &nvtx);
+  _ntuple->SetBranchAddress("run", &run);
+  _ntuple->SetBranchAddress("evt", &evt);
   //_ntuple->SetBranchAddress("jetDeepCSV", &jetDeepCSV);
   //_ntuple->SetBranchAddress("jetEta", &jetEta);
   if (_isMC){

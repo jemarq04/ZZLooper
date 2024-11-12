@@ -15,14 +15,17 @@ class ZZLooper : public ZZLooperBase {
     ZZLooper(const char *name, const char *channel, const char *filename);
     ~ZZLooper();
 
+    //Debug
     void SetNorm(bool norm=true){_norm = norm;}
+    void SetDeduplicate(bool deduplicate=true){_deduplicate=deduplicate;}
+
     void SetMode(std::string mode){_mode = mode;}
     void SetMakePlots(bool val=true);
     void SetPlotFiletype(std::string ft=".png");
     void Loop();
   private:
     bool _makePlots = false;
-    bool _norm = false;
+    bool _norm = false, _deduplicate = false;
     std::string _filetype = ".png", _mode = "UPDATE";
 };
 
@@ -62,6 +65,7 @@ void ZZLooper::Loop(){
     plotdir = opendir(dirname.c_str());
     if (!plotdir) mkdir(dirname.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     else closedir(plotdir);
+    MakeIndexFile(dirname);
 
     dirname += "/" + _channel;
     plotdir = opendir(dirname.c_str());
@@ -110,9 +114,15 @@ void ZZLooper::Loop(){
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
   Float_t l4Pt, l4Eta, l4Phi, l4Energy;
   Int_t l1PdgId, l2PdgId, l3PdgId, l4PdgId;
+  std::vector<ULong64_t> evts;
   std::cout << std::endl << "Begin looping over " << nentries << " entries..." << std::endl;
   for (unsigned int i=0; i<nentries; i++){
     _ntuple->GetEntry(i);
+    if (!_isMC && deduplicate){
+      if (std::find(evts.begin(), evts.end(), evt) != evts.end())
+        continue;
+      else evts.push_back(evt);
+    }
     if (_channel == "eeee"){
 			Z1mass = e1_e2_Mass; Z2mass = e3_e4_Mass;
       l1Pt = e1Pt; l1Eta = e1Eta; l1Phi = e1Phi; l1Energy = e1Energy;
@@ -286,6 +296,8 @@ int main(int nargs, char *argv[]){
     .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
   parser.add_argument<bool>("-n", "--norm").def("false")
     .help("if true, scale histograms to 1");
+  parser.add_argument<bool>("--deduplicate").def("false")
+    .help("if true, skip events whose event number has already been processed");
   parser.add_argument<bool>("-r", "--recreate").def("false")
     .help("if true, the output file will be recreated for the given channel(s)");
   parser.add_argument<bool>("--noplots").def("false")
@@ -311,9 +323,10 @@ int main(int nargs, char *argv[]){
   int index=0;
   for (std::string channel : channels){
     ZZLooper l(args["label"].c_str(), channel.c_str(), filename.c_str());
-    if (!args["noplots"].is_true()) l.SetMakePlots();
-    if (args["norm"].is_true()) l.SetNorm();
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
+    l.SetMakePlots(!args["noplots"].is_true());
+    l.SetNorm(args["norm"]);
+    l.SetDeduplicate(args["deduplicate"]);
     l.SetPlotFiletype(args["filetype"]);
 
     if (args["mc"].is_true()){

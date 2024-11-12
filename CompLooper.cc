@@ -17,7 +17,10 @@ class CompLooper : public CompLooperBase {
     CompLooper(const char *name, const char *channel, const char *label1, const char *label2);
     ~CompLooper();
 
+    //Debug
     void SetNorm(bool norm=true){_norm = norm;}
+    void SetDeduplicate(bool deduplicate=true){_deduplicate=deduplicate;}
+
 		void SetMode(std::string mode){_mode = mode;}
     void SetMakePlots(bool val=true);
     void SetMakeRatios(bool val=true);
@@ -27,7 +30,7 @@ class CompLooper : public CompLooperBase {
     std::string FindFile(const char *label);
     static constexpr const char *CHANNEL = "eemm";
     bool _makePlots = false, _makeRatios = false;
-    bool _norm = false;
+    bool _norm = false, _deduplicate = false;
     std::string _label1, _label2;
     std::string _filetype = ".png", _mode = "UPDATE";
 };
@@ -79,6 +82,7 @@ void CompLooper::Loop(){
     plotdir = opendir(dirname.c_str());
     if (!plotdir) mkdir(dirname.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
     else closedir(plotdir);
+    MakeIndexFile(dirname);
 
     dirname += "/" + _channel;
     plotdir = opendir(dirname.c_str());
@@ -156,9 +160,11 @@ void CompLooper::Loop(){
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
   Float_t l4Pt, l4Eta, l4Phi, l4Energy;
   Int_t l1PdgId, l2PdgId, l3PdgId, l4PdgId;
+  std::vector<ULong64_t> evts1={}, evts2={};
   std::cout << std::endl << "Begin looping over " << nentries << " entries..." << std::endl;
   for (unsigned int i=0; i<nentries; i++){
-    if (_ntuple1->GetEntry(i)){
+    if (_ntuple1->GetEntry(i) && std::find(evts1.begin(), evts1.end(), evt1) == evts1.end()){
+      if (!_isT1MC && _deduplicate) evts1.push_back(evt1);
       if (_channel == "eeee"){
 				Z1mass = e1_e2_Mass1; Z2mass = e3_e4_Mass1;
         l1Pt = e1Pt1; l1Eta = e1Eta1; l1Phi = e1Phi1; l1Energy = e1Energy1;
@@ -246,7 +252,8 @@ void CompLooper::Loop(){
 				PolCosTheta34_1->Fill(GetPolCosTheta(lp2, ln2), weight);
 			}
     }
-    if (_ntuple2->GetEntry(i)){
+    if (_ntuple2->GetEntry(i) && std::find(evts2.begin(), evts2.end(), evt2) == evts2.end()){
+      if (!_isT2MC && _deduplicate) evts2.push_back(evt2);
       if (_channel == "eeee"){
 				Z1mass = e1_e2_Mass2; Z2mass = e3_e4_Mass2;
         l1Pt = e1Pt2; l1Eta = e1Eta2; l1Phi = e1Phi2; l1Energy = e1Energy2;
@@ -518,6 +525,8 @@ int main(int nargs, char *argv[]){
     .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
   parser.add_argument<bool>("-n", "--norm").def("false")
     .help("if true, scale histograms to 1");
+  parser.add_argument<bool>("--deduplicate").def("false")
+    .help("if true, skip events whose event number has already been processed");
   parser.add_argument<bool>("-r", "--recreate").def("false")
     .help("if true, the output file will be recreated for the given channel(s)");
   parser.add_argument<bool>("--noplots").def("false")
@@ -547,9 +556,10 @@ int main(int nargs, char *argv[]){
   int index=0;
 	for (std::string channel : channels){
 		CompLooper l(args["name"].c_str(), channel.c_str(), args["label1"].c_str(), args["label2"].c_str());
-    if (!args["noplots"].is_true()) l.SetMakePlots();
-    if (args["norm"].is_true()) l.SetNorm();
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
+    l.SetMakePlots(!args["noplots"].is_true());
+    l.SetNorm(args["norm"]);
+    l.SetDeduplicate(args["deduplicate"]);
     l.SetPlotFiletype(args["filetype"]);
 		
 		if (args["mc1"].is_true()){
