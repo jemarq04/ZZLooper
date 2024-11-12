@@ -128,8 +128,8 @@ class ZZLooperBase{
     //UInt_t nZZTightIsoElec;
     //UInt_t nZZTightIsoMu;
     //UInt_t nZZTightMu;
-    //UInt_t nvtx;
-    //UInt_t run;
+    UInt_t nvtx;
+    UInt_t run;
     ULong64_t evt;
     //std::vector<float> *jetDeepCSV = 0;
     //std::vector<float> *jetEta = 0;

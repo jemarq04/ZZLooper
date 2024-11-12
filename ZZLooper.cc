@@ -118,7 +118,7 @@ void ZZLooper::Loop(){
   std::cout << std::endl << "Begin looping over " << nentries << " entries..." << std::endl;
   for (unsigned int i=0; i<nentries; i++){
     _ntuple->GetEntry(i);
-    if (!_isMC && deduplicate){
+    if (!_isMC && _deduplicate){
       if (std::find(evts.begin(), evts.end(), evt) != evts.end())
         continue;
       else evts.push_back(evt);
