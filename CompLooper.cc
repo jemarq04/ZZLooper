@@ -474,7 +474,12 @@ void CompLooper::Loop(){
   histout->cd();
   histout->rmdir(_channel.c_str());
   TDirectory *subdir = histout->mkdir(_channel.c_str());
-  if (subdir != nullptr) subdir->cd();
+  if (subdir != nullptr){
+    subdir->cd();
+    subdir->rmdir(_label1.c_str());
+    TDirectory *subsubdir = subdir->mkdir(_label1.c_str());
+    if (subsubdir != nullptr) subsubdir->cd();
+  }
 
   InvMass4l_1->Write();
   InvMass12_1->Write();
@@ -483,6 +488,13 @@ void CompLooper::Loop(){
   LepPt_1->Write();
 	PolCosTheta12_1->Write();
 	PolCosTheta34_1->Write();
+
+  if (subdir != nullptr){
+    subdir->cd();
+    subdir->rmdir(_label2.c_str());
+    TDirectory *subsubdir = subdir->mkdir(_label2.c_str());
+    if (subsubdir != nullptr) subsubdir->cd();
+  }
 
   InvMass4l_2->Write();
   InvMass12_2->Write();
