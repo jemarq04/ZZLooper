@@ -49,6 +49,7 @@ ZZSlimmerBase::~ZZSlimmerBase(){
 }
 
 void ZZSlimmerBase::AddFromFile(const char *filename){
+  if (_verbose) std::cout << "Getting list of datasets from " << filename << std::endl;
   std::ifstream infile(filename);
   if (!infile.is_open()){
     std::cerr << "Error opening file " << filename << std::endl;

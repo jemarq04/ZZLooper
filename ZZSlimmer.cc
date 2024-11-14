@@ -147,13 +147,12 @@ int main(int nargs, char *argv[]){
 
   std::string filename = args["filename"].is_none()?
     (std::string)"inputs/" + args["label"].str() + ".dat" : args["filename"];
-  std::cout << "Getting list of datasets from " << filename << std::endl;
 
   int index=0;
   for (std::string channel : channels){
     ZZSlimmer l(args["label"].c_str(), channel.c_str());
-    l.AddFromFile(filename.c_str());
 		l.SetVerbose(args["verbose"]);
+    l.AddFromFile(filename.c_str());
     l.SetMC(args["mc"]);
     l.SetNoCuts(args["nocuts"]);
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
