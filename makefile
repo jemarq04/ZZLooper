@@ -1,7 +1,7 @@
 CC=g++
-FLAGS=`root-config --cflags --libs` -lGenVector -o
-CFLAGS=`root-config --cflags` -c -g
-LFLAGS=`root-config --libs` -lGenVector -g -o
+FLAGS=`root-config --cflags --libs` -lGenVector `correction config --cflags --ldflags --rpath` -o
+CFLAGS=`root-config --cflags` `correction config --cflags` -c -g
+LFLAGS=`root-config --libs` -lGenVector `correction config --ldflags --rpath` -g -o
 EXEC=loop
 
 all: ZZSlimmer loopers

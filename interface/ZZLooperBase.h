@@ -21,9 +21,9 @@ class ZZLooperBase{
     void SetMC(bool isMC=true){_isMC = isMC;}
     void SetLumi(float lumi=1.){_lumi = lumi;}
     void SetXsec(float xsec=1.){_xsec = xsec;}
-		void SetKfac(float kfac=1.){_kfac = kfac;}
+    void SetKfac(float kfac=1.){_kfac = kfac;}
 
-    virtual void Loop() = 0;
+    virtual void Loop(bool applyScaleFacs=false) = 0;
   protected:
     void Init();
 
@@ -37,7 +37,7 @@ class ZZLooperBase{
 
     TFile *_infile;
     TTree *_ntuple;
-		Float_t _lumi=1.;
+    Float_t _lumi=1.;
     Float_t _xsec=1., _kfac=1.;
     std::string _name;
     std::string _channel;
@@ -84,7 +84,7 @@ class ZZLooperBase{
     //Float_t mjj_jerUp;
     //Float_t mjj_jesDown;
     //Float_t mjj_jesUp;
-    //Float_t nTruePU;
+    Float_t nTruePU;
     //Float_t originalXWGTUP;
     //Float_t phijj;
     //Float_t phijj_jerDown;
@@ -926,7 +926,7 @@ void ZZLooperBase::Init(){
     //_ntuple->SetBranchAddress("mjj_jesUp", &mjj_jesUp);
   }
   if (_isMC){
-    //_ntuple->SetBranchAddress("nTruePU", &nTruePU);
+    _ntuple->SetBranchAddress("nTruePU", &nTruePU);
   }
   if (_isMC){
     //_ntuple->SetBranchAddress("originalXWGTUP", &originalXWGTUP);

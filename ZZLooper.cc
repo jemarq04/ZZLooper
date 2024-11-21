@@ -9,6 +9,8 @@
 #include "TLegendEntry.h"
 #include "ROOT/RDataFrame.hxx"
 
+#include "correction.h"
+
 //NOTE: Only accepts 2022 skimmed ntuples
 class ZZLooper : public ZZLooperBase {
   public:
@@ -22,11 +24,15 @@ class ZZLooper : public ZZLooperBase {
     void SetMode(std::string mode){_mode = mode;}
     void SetMakePlots(bool val=true);
     void SetPlotFiletype(std::string ft=".png");
-    void Loop();
+
+    double GetScaleFactor();
+
+    void Loop(bool applyScaleFacs=false);
   private:
     bool _makePlots = false;
     bool _norm = false, _deduplicate = false;
     std::string _filetype = ".png", _mode = "UPDATE";
+    std::unique_ptr<correction::CorrectionSet> _pileupSF, _eIdSF, _eRecoSF, _mIdSF;
 };
 
 ZZLooper::ZZLooper(const char *name, const char *channel, const char *filename)
@@ -41,7 +47,50 @@ void ZZLooper::SetPlotFiletype(std::string ft){
   _filetype = ft;
 }
 
-void ZZLooper::Loop(){
+double ZZLooper::GetScaleFactor(){
+  double weight = 1.0;
+
+  auto GetEleRecoSFName = [](float pt){
+    if (pt < 20) return "RecoBelow20";
+    else if (pt < 75) return "Reco20to75";
+    else return "RecoAbove75";
+  };
+  if (_channel == "eeee"){
+    if (_eIdSF != nullptr){}
+    if (_eRecoSF != nullptr){
+      const auto recoref = (*_eRecoSF->begin()).second;
+      if (e1Pt > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1Pt), e1Eta, e1Pt});
+      if (e2Pt > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt), e2Eta, e2Pt});
+      if (e3Pt > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e3Pt), e3Eta, e3Pt});
+      if (e4Pt > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e4Pt), e4Eta, e4Pt});
+    }
+  }
+  else if (_channel == "eemm"){
+    if (_eIdSF != nullptr){}
+    if (_eRecoSF != nullptr){
+      const auto recoref = (*_eRecoSF->begin()).second;
+      if (e1Pt > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1Pt), e1Eta, e1Pt});
+      if (e2Pt > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt), e2Eta, e2Pt});
+    }
+    if (_mIdSF != nullptr){
+      if (m1Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta), m1Pt, "nominal"});
+      if (m2Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta), m2Pt, "nominal"});
+    }
+  }
+  else if (_channel == "mmmm"){
+    if (_mIdSF != nullptr){
+      if (m1Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta), m1Pt, "nominal"});
+      if (m2Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta), m2Pt, "nominal"});
+      if (m3Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta), m3Pt, "nominal"});
+      if (m4Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta), m4Pt, "nominal"});
+    }
+  }
+  if (_pileupSF != nullptr)
+    weight *= (*_pileupSF->begin()).second->evaluate({nTruePU, "nominal"});
+  return weight;
+}
+
+void ZZLooper::Loop(bool applyScaleFacs){
   Init();
 
   // Options
@@ -51,10 +100,10 @@ void ZZLooper::Loop(){
   TFile *histout = new TFile(("out/histout_" + _name + ".root").c_str(), "update");
   if (!histout->IsOpen()) return;
   histout->cd();
-	TCanvas *c = new TCanvas("c", "Histogram Canvas");
+  TCanvas *c = new TCanvas("c", "Histogram Canvas");
   c->cd();
   bool makeDirs = (plot || _makePlots);
-	
+  
   // Optionally creating plot directories
   std::string dirname = "plots/" + _name;
   if (makeDirs){
@@ -84,7 +133,16 @@ void ZZLooper::Loop(){
   else if (_channel == "mmmm"){
     l1 = "m1"; l2 = "m2"; l3 = "m3"; l4 = "m4";
   }
-  
+
+  // Setup correction sets
+  if (applyScaleFacs && _isMC){
+    std::string basename = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/";
+    _pileupSF = correction::CorrectionSet::from_file(basename + "/LUM/2022_Summer22/puWeights.json.gz");
+    //_eIdSF = correction::CorrectionSet::from_file(basename + "/EGM/2022_Summer22/electron.json.gz");
+    _eRecoSF = correction::CorrectionSet::from_file(basename + "/EGM/2022_Summer22/electron.json.gz");
+    _mIdSF = correction::CorrectionSet::from_file(basename + "/MUO/2022_Summer22/muon_Z.json.gz");
+  }
+
   // Binning
   std::vector<Double_t> InvMass4l_binning   = {100.0, 200.0, 250.0, 300.0, 350.0, 400.0, 500.0, 600.0, 800.0, 1000.0, 1200.0, 1500.0};
   std::vector<Double_t> InvMass_pair_binning = {0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120.};
@@ -107,7 +165,7 @@ void ZZLooper::Loop(){
 
   Long64_t nentries = _ntuple->GetEntries();
   ROOT::Math::PtEtaPhiEVector lp1, ln1, lp2, ln2;
-	Float_t Z1mass, Z2mass;
+  Float_t Z1mass, Z2mass;
   Float_t l1Pt, l1Eta, l1Phi, l1Energy;
   Float_t l2Pt, l2Eta, l2Phi, l2Energy;
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
@@ -123,7 +181,7 @@ void ZZLooper::Loop(){
       else evts.push_back(evt);
     }
     if (_channel == "eeee"){
-			Z1mass = e1_e2_Mass; Z2mass = e3_e4_Mass;
+      Z1mass = e1_e2_Mass; Z2mass = e3_e4_Mass;
       l1Pt = e1Pt; l1Eta = e1Eta; l1Phi = e1Phi; l1Energy = e1Energy;
       l2Pt = e2Pt; l2Eta = e2Eta; l2Phi = e2Phi; l2Energy = e2Energy;
       l3Pt = e3Pt; l3Eta = e3Eta; l3Phi = e3Phi; l3Energy = e3Energy;
@@ -132,27 +190,27 @@ void ZZLooper::Loop(){
       l3PdgId = e3PdgId; l4PdgId = e4PdgId;
     }
     else if (_channel == "eemm"){
-			if (std::fabs(e1_e2_Mass - Z_MASS) < std::fabs(m1_m2_Mass - Z_MASS)){
-				Z1mass = e1_e2_Mass; Z2mass = m1_m2_Mass;
-				l1Pt = e1Pt; l1Eta = e1Eta; l1Phi = e1Phi; l1Energy = e1Energy;
-				l2Pt = e2Pt; l2Eta = e2Eta; l2Phi = e2Phi; l2Energy = e2Energy;
-				l3Pt = m1Pt; l3Eta = m1Eta; l3Phi = m1Phi; l3Energy = m1Energy;
-				l4Pt = m2Pt; l4Eta = m2Eta; l4Phi = m2Phi; l4Energy = m2Energy;
-				l1PdgId = e1PdgId; l2PdgId = e2PdgId;
-				l3PdgId = m1PdgId; l4PdgId = m2PdgId;
-			}
-			else{
-				Z1mass = m1_m2_Mass; Z2mass = e1_e2_Mass;
-				l1Pt = m1Pt; l1Eta = m1Eta; l1Phi = m1Phi; l1Energy = m1Energy;
-				l2Pt = m2Pt; l2Eta = m2Eta; l2Phi = m2Phi; l2Energy = m2Energy;
-				l3Pt = e1Pt; l3Eta = e1Eta; l3Phi = e1Phi; l3Energy = e1Energy;
-				l4Pt = e2Pt; l4Eta = e2Eta; l4Phi = e2Phi; l4Energy = e2Energy;
-				l1PdgId = m1PdgId; l2PdgId = m2PdgId;
-				l3PdgId = e1PdgId; l4PdgId = e2PdgId;
-			}
+      if (std::fabs(e1_e2_Mass - Z_MASS) < std::fabs(m1_m2_Mass - Z_MASS)){
+        Z1mass = e1_e2_Mass; Z2mass = m1_m2_Mass;
+        l1Pt = e1Pt; l1Eta = e1Eta; l1Phi = e1Phi; l1Energy = e1Energy;
+        l2Pt = e2Pt; l2Eta = e2Eta; l2Phi = e2Phi; l2Energy = e2Energy;
+        l3Pt = m1Pt; l3Eta = m1Eta; l3Phi = m1Phi; l3Energy = m1Energy;
+        l4Pt = m2Pt; l4Eta = m2Eta; l4Phi = m2Phi; l4Energy = m2Energy;
+        l1PdgId = e1PdgId; l2PdgId = e2PdgId;
+        l3PdgId = m1PdgId; l4PdgId = m2PdgId;
+      }
+      else{
+        Z1mass = m1_m2_Mass; Z2mass = e1_e2_Mass;
+        l1Pt = m1Pt; l1Eta = m1Eta; l1Phi = m1Phi; l1Energy = m1Energy;
+        l2Pt = m2Pt; l2Eta = m2Eta; l2Phi = m2Phi; l2Energy = m2Energy;
+        l3Pt = e1Pt; l3Eta = e1Eta; l3Phi = e1Phi; l3Energy = e1Energy;
+        l4Pt = e2Pt; l4Eta = e2Eta; l4Phi = e2Phi; l4Energy = e2Energy;
+        l1PdgId = m1PdgId; l2PdgId = m2PdgId;
+        l3PdgId = e1PdgId; l4PdgId = e2PdgId;
+      }
     }
     else if (_channel == "mmmm"){
-			Z1mass = m1_m2_Mass; Z2mass = m3_m4_Mass;
+      Z1mass = m1_m2_Mass; Z2mass = m3_m4_Mass;
       l1Pt = m1Pt; l1Eta = m1Eta; l1Phi = m1Phi; l1Energy = m1Energy;
       l2Pt = m2Pt; l2Eta = m2Eta; l2Phi = m2Phi; l2Energy = m2Energy;
       l3Pt = m3Pt; l3Eta = m3Eta; l3Phi = m3Phi; l3Energy = m3Energy;
@@ -179,35 +237,36 @@ void ZZLooper::Loop(){
       lp2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
     }
     // Sort by Pt
-		/*
-    std::vector<ROOT::Math::PtEtaPhiEVector> leptons{lp1, ln1, lp2, ln2};
+    /*
     std::sort(leptons.begin(), leptons.end(), 
+    std::vector<ROOT::Math::PtEtaPhiEVector> leptons{lp1, ln1, lp2, ln2};
       [](const ROOT::Math::PtEtaPhiEVector &v1, const ROOT::Math::PtEtaPhiEVector &v2){
         return v1.Pt() > v2.Pt();
       }
     );
-		*/
+    */
 
-		if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
-			Float_t weight = _isMC? genWeight : 1.;
+    if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+      Float_t weight = _isMC? genWeight : 1.;
+      if (applyScaleFacs && _isMC) weight *= GetScaleFactor();
 
-			InvMass4l->Fill(Mass, weight);
-			InvMass12->Fill(Z1mass, weight);
-			InvMass34->Fill(Z2mass, weight);
+      InvMass4l->Fill(Mass, weight);
+      InvMass12->Fill(Z1mass, weight);
+      InvMass34->Fill(Z2mass, weight);
 
-			LepEnergy->Fill(l1Energy, weight);
-			LepEnergy->Fill(l2Energy, weight);
-			LepEnergy->Fill(l3Energy, weight);
-			LepEnergy->Fill(l4Energy, weight);
+      LepEnergy->Fill(l1Energy, weight);
+      LepEnergy->Fill(l2Energy, weight);
+      LepEnergy->Fill(l3Energy, weight);
+      LepEnergy->Fill(l4Energy, weight);
 
-			LepPt->Fill(l1Pt, weight);
-			LepPt->Fill(l2Pt, weight);
-			LepPt->Fill(l3Pt, weight);
-			LepPt->Fill(l4Pt, weight);
+      LepPt->Fill(l1Pt, weight);
+      LepPt->Fill(l2Pt, weight);
+      LepPt->Fill(l3Pt, weight);
+      LepPt->Fill(l4Pt, weight);
 
-			PolCosTheta12->Fill(GetPolCosTheta(lp1, ln1), weight);
-			PolCosTheta34->Fill(GetPolCosTheta(lp2, ln2), weight);
-		}
+      PolCosTheta12->Fill(GetPolCosTheta(lp1, ln1), weight);
+      PolCosTheta34->Fill(GetPolCosTheta(lp2, ln2), weight);
+    }
   }
   std::cout << "End looping." << std::endl;
 
@@ -280,8 +339,8 @@ void ZZLooper::Loop(){
 #ifndef __CLING__
 #include "interface/argparse.h"
 int main(int nargs, char *argv[]){
-	auto parser = argparse::ArgumentParser(nargs, argv)
-		.formatter_class(argparse::HelpFormatter::ArgumentDefaults);
+  auto parser = argparse::ArgumentParser(nargs, argv)
+    .formatter_class(argparse::HelpFormatter::ArgumentDefaults);
 
   parser.add_argument<bool>("--mc").def("false")
     .help("if true, add additional MC branches to slimmed ntuple");
@@ -289,8 +348,10 @@ int main(int nargs, char *argv[]){
     .help("data luminosity to scale MC in fb-1");
   parser.add_argument<double>("-x", "--xsec").def("1390") //qqZZ
     .help("cross-section of given MC process in fb");
-	parser.add_argument<double>("-k", "--kfac").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
-		.help("k-factor of given MC process");
+  parser.add_argument<double>("-k", "--kfac").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
+    .help("k-factor of given MC process");
+  parser.add_argument<bool>("--sf").def("false")
+    .help("if true, apply correctionlib scale factors");
   parser.add_argument("-c", "--channels")
     .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
   parser.add_argument<bool>("-n", "--norm").def("false")
@@ -334,9 +395,9 @@ int main(int nargs, char *argv[]){
       l.SetXsec(args["xsec"]);
       l.SetKfac(args["kfac"]);
     }
-    l.Loop();
+    l.Loop(args["sf"]);
   }
-	
+  
   return 0;
 }
 #endif

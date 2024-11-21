@@ -43,7 +43,7 @@ void ZZSlimmer::Slim(){
   outfile->cd();
 
   if (_verbose) std::cout << "Slimming " << _channel << " channel..." << std::endl;
-	
+  
   // Set values based on options
   std::string l1, l2, l3, l4;
   if (_channel == "eeee"){
@@ -68,7 +68,10 @@ void ZZSlimmer::Slim(){
   for (std::string &branchname : branchnames){
     _ntuple->SetBranchStatus(branchname.c_str(), 1);
   }
-  if (_isMC) _ntuple->SetBranchStatus("genWeight", 1);
+  if (_isMC){
+    _ntuple->SetBranchStatus("genWeight", 1);
+    _ntuple->SetBranchStatus("nTruePU", 1);
+  }
   _ntuple->SetBranchStatus((l1 + "_" + l2 + "_Mass").c_str(), 1);
   _ntuple->SetBranchStatus((l3 + "_" + l4 + "_Mass").c_str(), 1);
 
@@ -115,11 +118,11 @@ void ZZSlimmer::Slim(){
 #include "interface/argparse.h"
 
 int main(int nargs, char *argv[]){
-	auto parser = argparse::ArgumentParser(nargs, argv)
-		.formatter_class(argparse::HelpFormatter::ArgumentDefaults);
+  auto parser = argparse::ArgumentParser(nargs, argv)
+    .formatter_class(argparse::HelpFormatter::ArgumentDefaults);
 
-	parser.add_argument<bool>("-v", "--verbose").def("false")
-		.help("if true, script will be more verbose");
+  parser.add_argument<bool>("-v", "--verbose").def("false")
+    .help("if true, script will be more verbose");
   parser.add_argument<bool>("--nocuts").def("false")
     .help("if true, don't apply any cuts to data");
   parser.add_argument<bool>("--mc").def("false")
@@ -151,14 +154,14 @@ int main(int nargs, char *argv[]){
   int index=0;
   for (std::string channel : channels){
     ZZSlimmer l(args["label"].c_str(), channel.c_str());
-		l.SetVerbose(args["verbose"]);
+    l.SetVerbose(args["verbose"]);
     l.AddFromFile(filename.c_str());
     l.SetMC(args["mc"]);
     l.SetNoCuts(args["nocuts"]);
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.Slim();
   }
-	
+  
   return 0;
 }
 #endif

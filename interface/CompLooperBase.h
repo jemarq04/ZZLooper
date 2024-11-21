@@ -23,13 +23,13 @@ class CompLooperBase{
     void SetMC2(bool isMC=true){_isT2MC = isMC;}
     void SetXsec1(float xsec=1.){_xsec1 = xsec;}
     void SetXsec2(float xsec=1.){_xsec2 = xsec;}
-		void SetKfac1(float kfac=1.){_kfac1 = kfac;}
-		void SetKfac2(float kfac=1.){_kfac2 = kfac;}
+    void SetKfac1(float kfac=1.){_kfac1 = kfac;}
+    void SetKfac2(float kfac=1.){_kfac2 = kfac;}
     void SetMC(bool isMC1=true, bool isMC2=true){SetMC1(isMC1); SetMC2(isMC2);}
     void SetXsec(float xsec1=1., float xsec2=1.){SetXsec1(xsec1); SetXsec2(xsec2);}
-		void SetKfac(float kfac1=1., float kfac2=1.){SetKfac1(kfac1); SetKfac2(kfac2);}
+    void SetKfac(float kfac1=1., float kfac2=1.){SetKfac1(kfac1); SetKfac2(kfac2);}
 
-    virtual void Loop() = 0;
+    virtual void Loop(bool applyScaleFacs=false) = 0;
   protected:
     void Init();
 
@@ -43,9 +43,9 @@ class CompLooperBase{
 
     TFile *_infile1, *_infile2;
     TTree *_ntuple1, *_ntuple2;
-		Float_t _lumi=1.;
+    Float_t _lumi=1.;
     Float_t _xsec1=1., _xsec2=1.;
-		Float_t _kfac1=1., _kfac2=1.;
+    Float_t _kfac1=1., _kfac2=1.;
     std::string _name;
     std::string _channel;
 
@@ -129,8 +129,8 @@ class CompLooperBase{
     //Float_t mjj_jesDown2;
     //Float_t mjj_jesUp1;
     //Float_t mjj_jesUp2;
-    //Float_t nTruePU1;
-    //Float_t nTruePU2;
+    Float_t nTruePU1;
+    Float_t nTruePU2;
     //Float_t originalXWGTUP1;
     //Float_t originalXWGTUP2;
     //Float_t phijj1;
@@ -1623,17 +1623,17 @@ CompLooperBase::CompLooperBase(const char *name, const char *channel, const char
   : _name(name), _channel(channel){
   _infile1 = TFile::Open(filename1);
   if (_infile1 != nullptr)
-		_ntuple1 = (TTree*)_infile1->Get((_channel + "/ntuple").c_str());
+    _ntuple1 = (TTree*)_infile1->Get((_channel + "/ntuple").c_str());
   _infile2 = TFile::Open(filename2);
   if (_infile2 != nullptr)
-		_ntuple2 = (TTree*)_infile2->Get((_channel + "/ntuple").c_str());
+    _ntuple2 = (TTree*)_infile2->Get((_channel + "/ntuple").c_str());
 }
 
 CompLooperBase::~CompLooperBase(){
   if (_infile1 != nullptr)
-		_infile1->Close();
+    _infile1->Close();
   if (_infile2 != nullptr)
-		_infile2->Close();
+    _infile2->Close();
 }
 
 void CompLooperBase::Init(){
@@ -1797,10 +1797,10 @@ void CompLooperBase::Init(){
     //_ntuple2->SetBranchAddress("mjj_jesUp", &mjj_jesUp2);
   }
   if (_isT1MC){
-    //_ntuple1->SetBranchAddress("nTruePU", &nTruePU1);
+    _ntuple1->SetBranchAddress("nTruePU", &nTruePU1);
   }
   if (_isT2MC){
-    //_ntuple2->SetBranchAddress("nTruePU", &nTruePU2);
+    _ntuple2->SetBranchAddress("nTruePU", &nTruePU2);
   }
   if (_isT1MC){
     //_ntuple1->SetBranchAddress("originalXWGTUP", &originalXWGTUP1);
