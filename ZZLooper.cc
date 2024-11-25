@@ -405,7 +405,11 @@ int main(int nargs, char *argv[]){
       l.SetXsec(args["xsec"]);
       l.SetKfac(args["kfac"]);
     }
+#ifndef NOSF
     l.Loop(args["sf"]);
+#else
+		l.Loop();
+#endif
   }
   
   return 0;

@@ -695,7 +695,11 @@ int main(int nargs, char *argv[]){
       l.SetXsec2(args["xsec2"]);
       l.SetKfac2(args["kfac2"]);
     }
+#ifndef NOSF
     l.Loop(args["sf"]);
+#else
+		l.Loop();
+#endif
   }
   return 0;
 }
