@@ -9,7 +9,9 @@
 #include "TLegendEntry.h"
 #include "ROOT/RDataFrame.hxx"
 
+#ifndef NOSF
 #include "correction.h"
+#endif
 
 //NOTE: Only accepts 2022 skimmed ntuples
 class ZZLooper : public ZZLooperBase {
@@ -32,7 +34,9 @@ class ZZLooper : public ZZLooperBase {
     bool _makePlots = false;
     bool _norm = false, _deduplicate = false;
     std::string _filetype = ".png", _mode = "UPDATE";
+#ifndef NOSF
     std::unique_ptr<correction::CorrectionSet> _pileupSF, _eIdSF, _eRecoSF, _mIdSF;
+#endif
 };
 
 ZZLooper::ZZLooper(const char *name, const char *channel, const char *filename)
@@ -50,6 +54,7 @@ void ZZLooper::SetPlotFiletype(std::string ft){
 double ZZLooper::GetScaleFactor(){
   double weight = 1.0;
 
+#ifndef NOSF
   auto GetEleRecoSFName = [](float pt){
     if (pt < 20) return "RecoBelow20";
     else if (pt < 75) return "Reco20to75";
@@ -87,6 +92,7 @@ double ZZLooper::GetScaleFactor(){
   }
   if (_pileupSF != nullptr)
     weight *= (*_pileupSF->begin()).second->evaluate({nTruePU, "nominal"});
+#endif
   return weight;
 }
 
@@ -134,6 +140,7 @@ void ZZLooper::Loop(bool applyScaleFacs){
     l1 = "m1"; l2 = "m2"; l3 = "m3"; l4 = "m4";
   }
 
+#ifndef NOSF
   // Setup correction sets
   if (applyScaleFacs && _isMC){
     std::string basename = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/";
@@ -142,6 +149,7 @@ void ZZLooper::Loop(bool applyScaleFacs){
     _eRecoSF = correction::CorrectionSet::from_file(basename + "/EGM/2022_Summer22/electron.json.gz");
     _mIdSF = correction::CorrectionSet::from_file(basename + "/MUO/2022_Summer22/muon_Z.json.gz");
   }
+#endif
 
   // Binning
   std::vector<Double_t> InvMass4l_binning   = {100.0, 200.0, 250.0, 300.0, 350.0, 400.0, 500.0, 600.0, 800.0, 1000.0, 1200.0, 1500.0};
@@ -350,8 +358,10 @@ int main(int nargs, char *argv[]){
     .help("cross-section of given MC process in fb");
   parser.add_argument<double>("-k", "--kfac").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
     .help("k-factor of given MC process");
+#ifndef NOSF
   parser.add_argument<bool>("--sf").def("false")
     .help("if true, apply correctionlib scale factors");
+#endif
   parser.add_argument("-c", "--channels")
     .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
   parser.add_argument<bool>("-n", "--norm").def("false")

@@ -1,8 +1,20 @@
 CC=g++
-FLAGS=`root-config --cflags --libs` -lGenVector `correction config --cflags --ldflags --rpath` -o
-CFLAGS=`root-config --cflags` `correction config --cflags` -c -g
-LFLAGS=`root-config --libs` -lGenVector `correction config --ldflags --rpath` -g -o
+FLAGS=`root-config --cflags --libs` -lGenVector -o 
+CORR_FLAGS=`correction config --cflags --ldflags --rpath`
+CFLAGS=`root-config --cflags` -c -g
+CORR_CFLAGS=`correction config --cflags`
+LFLAGS=`root-config --libs` -lGenVector -g -o
+CORR_LFLAGS=`correction config --ldflags --rpath`
 EXEC=loop
+
+ifndef NOSF
+	FLAGS:=$(CORR_FLAGS) $(FLAGS)
+	CFLAGS:=$(CORR_CFLAGS) $(CFLAGS)
+	LFLAGS:=$(CORR_LFLAGS) $(LFLAGS)
+else
+	FLAGS:=-DNOSF $(FLAGS)
+	CFLAGS:=-DNOSF $(CFLAGS)
+endif
 
 all: ZZSlimmer loopers
 
@@ -17,8 +29,6 @@ CompLooper: CompLooper.o RatioPlotter.o; $(CC) $(LFLAGS) $@ $^
 CompLooper.o: CompLooper.cc interface/CompLooperBase.h interface/argparse.h; $(CC) $(CFLAGS) $<
 
 RatioPlotter.o: RatioPlotter.cc RatioPlotter.h; $(CC) $(CFLAGS) $<
-
-#CompSlimmer: CompSlimmer.cc interface/CompLooperBase.h; $(CC) $(FLAGS) $@ $<
 
 cleanall: clean rootclean
 

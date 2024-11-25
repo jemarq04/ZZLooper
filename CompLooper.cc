@@ -11,7 +11,9 @@
 #include "TLegendEntry.h"
 #include "ROOT/RDataFrame.hxx"
 
+#ifndef NOSF
 #include "correction.h"
+#endif
 
 //NOTE: Only accepts 2022 skimmed ntuples
 class CompLooper : public CompLooperBase {
@@ -40,7 +42,9 @@ class CompLooper : public CompLooperBase {
     bool _norm = false, _deduplicate = false;
     std::string _label1, _label2;
     std::string _filetype = ".png", _mode = "UPDATE";
+#ifndef NOSF
     std::unique_ptr<correction::CorrectionSet> _pileupSF, _eIdSF, _eRecoSF, _mIdSF;
+#endif
 };
 
 CompLooper::CompLooper(const char *name, const char *channel, const char *label1, const char *label2)
@@ -64,6 +68,7 @@ void CompLooper::SetPlotFiletype(std::string ft){
 double CompLooper::GetScaleFactor(Ntuple ntuple){
   double weight = 1.0;
 
+#ifndef NOSF
   auto GetEleRecoSFName = [](float pt){
     if (pt < 20) return "RecoBelow20";
     else if (pt < 75) return "Reco20to75";
@@ -133,6 +138,7 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
     else
       weight *= (*_pileupSF->begin()).second->evaluate({nTruePU2, "nominal"});
   }
+#endif
   return weight;
 }
 
@@ -195,6 +201,7 @@ void CompLooper::Loop(bool applyScaleFacs){
     l1 = "m1"; l2 = "m2"; l3 = "m3"; l4 = "m4";
   }
   
+#ifndef NOSF
   // Setup correction sets
   if (applyScaleFacs && (_isT1MC || _isT2MC)){
     std::string basename = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/";
@@ -207,6 +214,7 @@ void CompLooper::Loop(bool applyScaleFacs){
     //if (_eRecoSF != nullptr) std::cout << "Applying eRecoSF..." << std::endl;
     //if (_mIdSF != nullptr) std::cout << "Applying mIdSF..." << std::endl;
   }
+#endif
 
   // Binning
   std::vector<Double_t> InvMass_4l_binning   = {100.0, 200.0, 250.0, 300.0, 350.0, 400.0, 500.0, 600.0, 800.0, 1000.0, 1200.0, 1500.0};
@@ -630,8 +638,10 @@ int main(int nargs, char *argv[]){
     .help("k-factor of given MC process for first input");
   parser.add_argument<double>("-K", "--kfac2").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
     .help("k-factor of given MC process for second input");
+#ifndef NOSF
   parser.add_argument<bool>("--sf").def("false")
     .help("if true, apply correctionlib scale factors");
+#endif
   parser.add_argument("-c", "--channels")
     .help("process only the specified comma-separated channels, otherwise all. options: eeee, eemm, mmmm");
   parser.add_argument<bool>("-n", "--norm").def("false")
