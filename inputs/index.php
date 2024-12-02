@@ -51,7 +51,7 @@ foreach (glob("*") as $filename) {
 }
 print "</div>";
 
-foreach (array("00_README.txt", "README.txt", "readme.txt") as $readme) {
+foreach (array("00_README.txt", "README.txt", "readme.txt", "README") as $readme) {
     if (file_exists($readme)) {
         print "<pre class='readme'>\n"; readfile($readme); print "</pre>";
     }
