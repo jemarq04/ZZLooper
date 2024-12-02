@@ -317,6 +317,21 @@ void ZZLooper::Loop(bool applyScaleFacs){
       c->SaveAs((dirname + "/" + hist->GetName() + _filetype).c_str());
     };
 
+    std::ofstream readme((dirname + "/README").c_str());
+    if (readme.is_open()){
+      readme << "Events: " << InvMass4l->GetEntries() << std::endl;
+      if (_isMC && !_norm){
+        float histScaling = _kfac * _xsec * _lumi / summedWeights;
+        readme << "Scaling: " << histScaling << std::endl;
+        readme << "  - Cross-section: " << _xsec << " fb" << std::endl;
+        readme << "  - Luminosity: " << _lumi << " fb-1" << std::endl;
+        readme << "  - Summed Weights: " << summedWeights << std::endl;
+        readme << "  - k-factor: " << _kfac << std::endl;
+      }
+      if (applyScaleFacs) readme << "Efficiency SFs applied." << std::endl;
+      readme.close();
+    }
+
     Draw(InvMass4l);
     Draw(InvMass12);
     Draw(InvMass34);

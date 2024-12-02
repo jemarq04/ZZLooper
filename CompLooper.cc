@@ -549,6 +549,30 @@ void CompLooper::Loop(bool applyScaleFacs){
       c->SaveAs((dirname + "/" + histname + _filetype).c_str());
     };
 
+    std::ofstream readme((dirname + "/README").c_str());
+    if (readme.is_open()){
+      readme << _label1 << " Events: " << InvMass4l_1->GetEntries() << std::endl;
+      readme << _label2 << " Events: " << InvMass4l_2->GetEntries() << std::endl;
+      if (_isT1MC && !_norm){
+        float histScaling1 = _kfac1 * _xsec1 * _lumi / summedWeights1;
+        readme << _label1 << " Scaling: " << histScaling1 << std::endl;
+        readme << "  - Cross-section: " << _xsec1 << " fb" << std::endl;
+        readme << "  - Luminosity: " << _lumi << " fb-1" << std::endl;
+        readme << "  - Summed Weights: " << summedWeights1 << std::endl;
+        readme << "  - k-factor: " << _kfac1 << std::endl;
+      }
+      if (_isT2MC && !_norm){
+        float histScaling2 = _kfac2 * _xsec2 * _lumi / summedWeights2;
+        readme << _label2 << " Scaling: " << histScaling2 << std::endl;
+        readme << "  - Cross-section: " << _xsec2 << " fb" << std::endl;
+        readme << "  - Luminosity: " << _lumi << " fb-1" << std::endl;
+        readme << "  - Summed Weights: " << summedWeights2 << std::endl;
+        readme << "  - k-factor: " << _kfac2 << std::endl;
+      }
+      if (applyScaleFacs) readme << "Efficiency SFs applied." << std::endl;
+      readme.close();
+    }
+
     Draw(InvMass4l_1, Ntuple::First);
     Draw(InvMass12_1, Ntuple::First);
     Draw(InvMass34_1, Ntuple::First);
