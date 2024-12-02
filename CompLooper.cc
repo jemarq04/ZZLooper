@@ -621,6 +621,11 @@ void CompLooper::Loop(bool applyScaleFacs){
 #ifndef __CLING__
 #include "interface/argparse.h"
 int main(int nargs, char *argv[]){
+  float kfac;
+  kfac = 1.2; //qqZZ kfac ~1.1 plus missing ggZZ signal
+  //kfac = 1.1 * 1.01587 * 1.0004874; //qqZZ kfac * expected ggZZ signal * expected EWK signal
+  std::stringstream ss_kfac; ss_kfac << kfac;
+
   auto parser = argparse::ArgumentParser(nargs, argv)
     .formatter_class(argparse::HelpFormatter::ArgumentDefaults);
 
@@ -628,15 +633,15 @@ int main(int nargs, char *argv[]){
     .help("if true, consider first input to be MC");
   parser.add_argument<bool>("--mc2").def("false")
     .help("if true, consider second input to be MC");
-  parser.add_argument<double>("-l", "--lumi").def("7.561502251") //2022CD
+  parser.add_argument<double>("-l", "--lumi").def("37.846170084") //2022
     .help("data luminosity to scale MC in fb-1");
   parser.add_argument<double>("-x", "--xsec1").def("1390") //qqZZ
     .help("cross-section of given MC process in fb for first input");
   parser.add_argument<double>("-X", "--xsec2").def("1390") //qqZZ
     .help("cross-section of given MC process in fb for second input");
-  parser.add_argument<double>("-k", "--kfac1").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
+  parser.add_argument<double>("-k", "--kfac1").def(ss_kfac.str()) //qqZZ kfac ~1.1 plus missing ggZZ signal
     .help("k-factor of given MC process for first input");
-  parser.add_argument<double>("-K", "--kfac2").def("1.2") //qqZZ kfac ~1.1 plus missing ggZZ signal
+  parser.add_argument<double>("-K", "--kfac2").def(ss_kfac.str()) //qqZZ kfac ~1.1 plus missing ggZZ signal
     .help("k-factor of given MC process for second input");
 #ifndef NOSF
   parser.add_argument<bool>("--sf").def("false")

@@ -352,7 +352,7 @@ int main(int nargs, char *argv[]){
 
   parser.add_argument<bool>("--mc").def("false")
     .help("if true, add additional MC branches to slimmed ntuple");
-  parser.add_argument<double>("-l", "--lumi").def("7.561502251") //2022CD
+  parser.add_argument<double>("-l", "--lumi").def("37.846170084") //2022
     .help("data luminosity to scale MC in fb-1");
   parser.add_argument<double>("-x", "--xsec").def("1390") //qqZZ
     .help("cross-section of given MC process in fb");
