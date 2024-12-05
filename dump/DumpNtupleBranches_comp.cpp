@@ -27,14 +27,17 @@ void DumpNtupleBranches_comp(string filename){
         else
           fout << "//std::" << tname << " *" << key->GetName() << comps[i] << " = 0;" << endl;
       }
-
+      if (isBaseType) fout << "//" << tname << " " << key->GetName() << "EE;" << endl;
+      else fout << "//std::" << tname << " *" << key->GetName() << "EE = 0;" << endl;
     }
     fout.close();
     next.Reset();
     fout.open(("comp/" + channel + "_addr.txt").c_str());
-    while ((key = (TKey*)next()))
+    while ((key = (TKey*)next())){
       for (int i=0; i<2; i++)
         fout << "//_ntuple" << comps[i] << "->SetBranchAddress(\"" << key->GetName() << "\", &" << key->GetName() << comps[i] << ");" << endl;
+      fout << "//_ntupleEE->SetBranchAddress(\"" << key->GetName() << "\", &" << key->GetName() << "EE);" << endl;
+    }
     fout.close();
   }
 

@@ -35,7 +35,10 @@ def combine():
             outfile.write("//Shared branches\n")
             for line in each:
                 if i==0 and any(var in line for var in skip):
-                    outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    if "ntupleEE" not in line:
+                        outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    else:
+                        outfile.write("if (_doEE){\n%s}\n" % line)
                 else:
                     outfile.write(line)
             if i==0:
@@ -44,7 +47,10 @@ def combine():
                 outfile.write("\n//eeee\n")
             for line in eeee:
                 if i==0 and any(var in line for var in skip):
-                    outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    if "ntupleEE" not in line:
+                        outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    else:
+                        outfile.write("if (_doEE){\n%s}\n" % line)
                 else:
                     outfile.write(line)
             if i==0:
@@ -53,7 +59,10 @@ def combine():
                 outfile.write("\n//eemm\n")
             for line in eemm:
                 if i==0 and any(var in line for var in skip):
-                    outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    if "ntupleEE" not in line:
+                        outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    else:
+                        outfile.write("if (_doEE){\n%s}\n" % line)
                 else:
                     outfile.write(line)
             if i==0:
@@ -62,7 +71,10 @@ def combine():
                 outfile.write("\n//mmmm\n")
             for line in mmmm:
                 if i==0 and any(var in line for var in skip):
-                    outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    if "ntupleEE" not in line:
+                        outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    else:
+                        outfile.write("if (_doEE){\n%s}\n" % line)
                 else:
                     outfile.write(line)
             if i==0:
@@ -71,7 +83,10 @@ def combine():
                 outfile.write("\n//eeee or eemm\n")
             for line in eeee_eemm:
                 if i==0 and any(var in line for var in skip):
-                    outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    if "ntupleEE" not in line:
+                        outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    else:
+                        outfile.write("if (_doEE){\n%s}\n" % line)
                 else:
                     outfile.write(line)
             if i==0:
@@ -80,7 +95,10 @@ def combine():
                 outfile.write("\n//mmmm or eemm\n")
             for line in mmmm_eemm:
                 if i==0 and any(var in line for var in skip):
-                    outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    if "ntupleEE" not in line:
+                        outfile.write("if (_isT%iMC){\n%s}\n" % (1 if "_ntuple1" in line else 2, line))
+                    else:
+                        outfile.write("if (_doEE){\n%s}\n" % line)
                 else:
                     outfile.write(line)
             if i==0:
