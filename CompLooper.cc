@@ -612,12 +612,10 @@ void CompLooper::Loop(bool applyScaleFacs){
 
   // Scaling
   if (!_norm){
-    if (_doEE) _ntupleEE->GetEntry(0);
     if (_isT1MC){
       _ntuple1->GetEntry(0);
-      //std::cout << "summedWeights1=" << summedWeights1 << std::endl;
       float histScaling1 = _kfac1 * _xsec1 * _lumi;
-      //histScaling1 /= (_doEE? summedWeights1+summedWeightsEE : summedWeights1);
+      //Division by summedWeights is done when filling histos bc of EE analysis
       InvMass4l_1->Scale(histScaling1);
       InvMass12_1->Scale(histScaling1);
       InvMass34_1->Scale(histScaling1);
@@ -628,9 +626,8 @@ void CompLooper::Loop(bool applyScaleFacs){
     }
     if (_isT2MC){
       _ntuple2->GetEntry(0);
-      //std::cout << "summedWeights2=" << summedWeights2 << std::endl;
       float histScaling2 = _kfac2 * _xsec2 * _lumi;
-      //histScaling2 /= (_doEE? summedWeights2+summedWeightsEE : summedWeights2);
+      //Division by summedWeights is done when filling histos bc of EE analysis
       InvMass4l_2->Scale(histScaling2);
       InvMass12_2->Scale(histScaling2);
       InvMass34_2->Scale(histScaling2);
