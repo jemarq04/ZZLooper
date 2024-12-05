@@ -18,7 +18,7 @@
 //NOTE: Only accepts 2022 skimmed ntuples
 class CompLooper : public CompLooperBase {
   private:
-    enum Ntuple {First, Second};
+    enum Ntuple {First, Second, EE};
   public:
     CompLooper(const char *name, const char *channel, const char *label1, const char *label2);
     ~CompLooper();
@@ -28,8 +28,8 @@ class CompLooper : public CompLooperBase {
     void SetDeduplicate(bool deduplicate=true){_deduplicate=deduplicate;}
 
     void SetMode(std::string mode){_mode = mode;}
-    void SetMakePlots(bool val=true);
-    void SetMakeRatios(bool val=true);
+    void SetMakePlots(bool val=true){_makePlots = val;}
+    void SetMakeRatios(bool val=true){_makeRatios = val;}
     void SetPlotFiletype(std::string ft=".png");
 
     double GetScaleFactor(Ntuple ntuple);
@@ -37,7 +37,6 @@ class CompLooper : public CompLooperBase {
     void Loop(bool applyScaleFacs=false);
   private:
     std::string FindFile(const char *label);
-    static constexpr const char *CHANNEL = "eemm";
     bool _makePlots = false, _makeRatios = false;
     bool _norm = false, _deduplicate = false;
     std::string _label1, _label2;
@@ -57,8 +56,6 @@ CompLooper::CompLooper(const char *name, const char *channel, const char *label1
 
 CompLooper::~CompLooper(){}
 
-void CompLooper::SetMakePlots(bool val){_makePlots = val;}
-void CompLooper::SetMakeRatios(bool val){_makeRatios = val;}
 void CompLooper::SetPlotFiletype(std::string ft){
   if (ft.size() == 0) return;
   if (ft[0] != '.') ft = "." + ft;
@@ -84,11 +81,17 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (e3Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e3Pt1), e3Eta1, e3Pt1});
         if (e4Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e4Pt1), e4Eta1, e4Pt1});
       }
-      else{
+      else if (ntuple == Ntuple::Second){
         if (e1Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1Pt2), e1Eta2, e1Pt2});
         if (e2Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt2), e2Eta2, e2Pt2});
         if (e3Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e3Pt2), e3Eta2, e3Pt2});
         if (e4Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e4Pt2), e4Eta2, e4Pt2});
+      }
+      else{
+        if (e1PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1PtEE), e1EtaEE, e1PtEE});
+        if (e2PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2PtEE), e2EtaEE, e2PtEE});
+        if (e3PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e3PtEE), e3EtaEE, e3PtEE});
+        if (e4PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e4PtEE), e4EtaEE, e4PtEE});
       }
     }
   }
@@ -100,9 +103,13 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (e1Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1Pt1), e1Eta1, e1Pt1});
         if (e2Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt1), e2Eta1, e2Pt1});
       }
-      else{
+      else if (ntuple == Ntuple::Second){
         if (e1Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1Pt2), e1Eta2, e1Pt2});
         if (e2Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt2), e2Eta2, e2Pt2});
+      }
+      else{
+        if (e1PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1PtEE), e1EtaEE, e1PtEE});
+        if (e2PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2PtEE), e2EtaEE, e2PtEE});
       }
     }
     if (_mIdSF != nullptr){
@@ -110,9 +117,13 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (m1Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta1), m1Pt1, "nominal"});
         if (m2Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta1), m2Pt1, "nominal"});
       }
-      else{
+      else if (ntuple == Ntuple::Second){
         if (m1Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta2), m1Pt2, "nominal"});
         if (m2Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta2), m2Pt2, "nominal"});
+      }
+      else{
+        if (m1PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
+        if (m2PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
       }
     }
   }
@@ -124,19 +135,27 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (m3Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta1), m3Pt1, "nominal"});
         if (m4Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta1), m4Pt1, "nominal"});
       }
-      else{
+      else if (ntuple == Ntuple::Second){
         if (m1Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta2), m1Pt2, "nominal"});
         if (m2Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta2), m2Pt2, "nominal"});
         if (m3Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta2), m3Pt2, "nominal"});
         if (m4Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta2), m4Pt2, "nominal"});
+      }
+      else{
+        if (m1PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
+        if (m2PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
+        if (m3PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3EtaEE), m3PtEE, "nominal"});
+        if (m4PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4EtaEE), m4PtEE, "nominal"});
       }
     }
   }
   if (_pileupSF != nullptr){
     if (ntuple == Ntuple::First)
       weight *= (*_pileupSF->begin()).second->evaluate({nTruePU1, "nominal"});
-    else
+    else if (ntuple == Ntuple::Second)
       weight *= (*_pileupSF->begin()).second->evaluate({nTruePU2, "nominal"});
+    else
+      weight *= (*_pileupSF->begin()).second->evaluate({nTruePUEE, "nominal"});
   }
 #endif
   return weight;
@@ -254,6 +273,10 @@ void CompLooper::Loop(bool applyScaleFacs){
 
   Long64_t nentries1 = _ntuple1->GetEntries();
   Long64_t nentries2 = _ntuple2->GetEntries();
+  if (_doEE){
+    Long64_t nentriesEE= _ntupleEE->GetEntries();
+    nentries1 = nentries1 > nentriesEE? nentries1 : nentriesEE;
+  }
   Long64_t nentries = nentries1 > nentries2? nentries1 : nentries2;
 
   ROOT::Math::PtEtaPhiEVector lp1, ln1, lp2, ln2;
@@ -335,8 +358,13 @@ void CompLooper::Loop(bool applyScaleFacs){
       */
 
       if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
-        Float_t weight = _isT1MC? genWeight1 : 1.;
-        if (applyScaleFacs && _isT1MC) weight *= GetScaleFactor(Ntuple::First);
+        Float_t weight = 1.;
+        if (_isT1MC){
+          weight *= genWeight1;
+          if (applyScaleFacs) weight *= GetScaleFactor(Ntuple::First);
+          if (_doEE) weight *= 0.2;
+          if (!_norm) weight /= summedWeights1;
+        }
 
         InvMass4l_1->Fill(Mass1, weight);
         InvMass12_1->Fill(Z1mass, weight);
@@ -425,8 +453,13 @@ void CompLooper::Loop(bool applyScaleFacs){
       */
 
       if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
-        Float_t weight = _isT2MC? genWeight2 : 1.;
-        if (applyScaleFacs && _isT2MC) weight *= GetScaleFactor(Ntuple::Second);
+        Float_t weight = 1.;
+        if (_isT2MC){
+          weight *= genWeight2;
+          if (applyScaleFacs) weight *= GetScaleFactor(Ntuple::Second);
+          if (_doEE) weight *= 0.2;
+          if (!_norm) weight /= summedWeights2;
+        }
 
         InvMass4l_2->Fill(Mass2, weight);
         InvMass12_2->Fill(Z1mass, weight);
@@ -444,6 +477,117 @@ void CompLooper::Loop(bool applyScaleFacs){
 
         PolCosTheta12_2->Fill(GetPolCosTheta(lp1, ln1), weight);
         PolCosTheta34_2->Fill(GetPolCosTheta(lp2, ln2), weight);
+      }
+    }
+    if (_doEE && _ntupleEE->GetEntry(i)){
+      if (_channel == "eeee"){
+        Z1mass = e1_e2_MassEE; Z2mass = e3_e4_MassEE;
+        l1Pt = e1PtEE; l1Eta = e1EtaEE; l1Phi = e1PhiEE; l1Energy = e1EnergyEE;
+        l2Pt = e2PtEE; l2Eta = e2EtaEE; l2Phi = e2PhiEE; l2Energy = e2EnergyEE;
+        l3Pt = e3PtEE; l3Eta = e3EtaEE; l3Phi = e3PhiEE; l3Energy = e3EnergyEE;
+        l4Pt = e4PtEE; l4Eta = e4EtaEE; l4Phi = e4PhiEE; l4Energy = e4EnergyEE;
+        l1PdgId = e1PdgIdEE; l2PdgId = e2PdgIdEE;
+        l3PdgId = e3PdgIdEE; l4PdgId = e4PdgIdEE;
+      }
+      else if (_channel == "eemm"){
+        if (std::fabs(e1_e2_MassEE - Z_MASS) < std::fabs(m1_m2_MassEE - Z_MASS)){
+          Z1mass = e1_e2_MassEE; Z2mass = m1_m2_MassEE;
+          l1Pt = e1PtEE; l1Eta = e1EtaEE; l1Phi = e1PhiEE; l1Energy = e1EnergyEE;
+          l2Pt = e2PtEE; l2Eta = e2EtaEE; l2Phi = e2PhiEE; l2Energy = e2EnergyEE;
+          l3Pt = m1PtEE; l3Eta = m1EtaEE; l3Phi = m1PhiEE; l3Energy = m1EnergyEE;
+          l4Pt = m2PtEE; l4Eta = m2EtaEE; l4Phi = m2PhiEE; l4Energy = m2EnergyEE;
+          l1PdgId = e1PdgIdEE; l2PdgId = e2PdgIdEE;
+          l3PdgId = m1PdgIdEE; l4PdgId = m2PdgIdEE;
+        }
+        else{
+          Z1mass = m1_m2_MassEE; Z2mass = e1_e2_MassEE;
+          l1Pt = m1PtEE; l1Eta = m1EtaEE; l1Phi = m1PhiEE; l1Energy = m1EnergyEE;
+          l2Pt = m2PtEE; l2Eta = m2EtaEE; l2Phi = m2PhiEE; l2Energy = m2EnergyEE;
+          l3Pt = e1PtEE; l3Eta = e1EtaEE; l3Phi = e1PhiEE; l3Energy = e1EnergyEE;
+          l4Pt = e2PtEE; l4Eta = e2EtaEE; l4Phi = e2PhiEE; l4Energy = e2EnergyEE;
+          l1PdgId = m1PdgIdEE; l2PdgId = m2PdgIdEE;
+          l3PdgId = e1PdgIdEE; l4PdgId = e2PdgIdEE;
+        }
+      }
+      else if (_channel == "mmmm"){
+        Z1mass = m1_m2_MassEE; Z2mass = m3_m4_MassEE;
+        l1Pt = m1PtEE; l1Eta = m1EtaEE; l1Phi = m1PhiEE; l1Energy = m1EnergyEE;
+        l2Pt = m2PtEE; l2Eta = m2EtaEE; l2Phi = m2PhiEE; l2Energy = m2EnergyEE;
+        l3Pt = m3PtEE; l3Eta = m3EtaEE; l3Phi = m3PhiEE; l3Energy = m3EnergyEE;
+        l4Pt = m4PtEE; l4Eta = m4EtaEE; l4Phi = m4PhiEE; l4Energy = m4EnergyEE;
+        l1PdgId = m1PdgIdEE; l2PdgId = m2PdgIdEE;
+        l3PdgId = m3PdgIdEE; l4PdgId = m4PdgIdEE;
+      }
+      // Set primary pair
+      if (l1PdgId > 0){
+        lp1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
+        ln1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
+      }
+      else{
+        ln1 = ROOT::Math::PtEtaPhiEVector(l1Pt, l1Eta, l1Phi, l1Energy);
+        lp1 = ROOT::Math::PtEtaPhiEVector(l2Pt, l2Eta, l2Phi, l2Energy);
+      }
+      // Set secondary pair
+      if (l3PdgId > 0){
+        lp2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
+        ln2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
+      }
+      else{
+        ln2 = ROOT::Math::PtEtaPhiEVector(l3Pt, l3Eta, l3Phi, l3Energy);
+        lp2 = ROOT::Math::PtEtaPhiEVector(l4Pt, l4Eta, l4Phi, l4Energy);
+      }
+      // Sort by Pt
+      /*
+      std::vector<ROOT::Math::PtEtaPhiEVector> leptons{lp1, ln1, lp2, ln2};
+      std::sort(leptons.begin(), leptons.end(), 
+        [](const ROOT::Math::PtEtaPhiEVector &v1, const ROOT::Math::PtEtaPhiEVector &v2){
+          return v1.Pt() > v2.Pt();
+        }
+      );
+      */
+
+      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+        Float_t weight = genWeightEE;
+        if (applyScaleFacs) weight *= GetScaleFactor(Ntuple::EE);
+        weight *= 0.8;
+        if (!_norm) weight /= summedWeightsEE;
+
+        if (_isT1MC){
+          InvMass4l_1->Fill(MassEE, weight);
+          InvMass12_1->Fill(Z1mass, weight);
+          InvMass34_1->Fill(Z2mass, weight);
+
+          LepEnergy_1->Fill(l1Energy, weight);
+          LepEnergy_1->Fill(l2Energy, weight);
+          LepEnergy_1->Fill(l3Energy, weight);
+          LepEnergy_1->Fill(l4Energy, weight);
+
+          LepPt_1->Fill(l1Pt, weight);
+          LepPt_1->Fill(l2Pt, weight);
+          LepPt_1->Fill(l3Pt, weight);
+          LepPt_1->Fill(l4Pt, weight);
+
+          PolCosTheta12_1->Fill(GetPolCosTheta(lp1, ln1), weight);
+          PolCosTheta34_1->Fill(GetPolCosTheta(lp2, ln2), weight);
+        }
+        else{
+          InvMass4l_2->Fill(MassEE, weight);
+          InvMass12_2->Fill(Z1mass, weight);
+          InvMass34_2->Fill(Z2mass, weight);
+
+          LepEnergy_2->Fill(l1Energy, weight);
+          LepEnergy_2->Fill(l2Energy, weight);
+          LepEnergy_2->Fill(l3Energy, weight);
+          LepEnergy_2->Fill(l4Energy, weight);
+
+          LepPt_2->Fill(l1Pt, weight);
+          LepPt_2->Fill(l2Pt, weight);
+          LepPt_2->Fill(l3Pt, weight);
+          LepPt_2->Fill(l4Pt, weight);
+
+          PolCosTheta12_2->Fill(GetPolCosTheta(lp1, ln1), weight);
+          PolCosTheta34_2->Fill(GetPolCosTheta(lp2, ln2), weight);
+        }
       }
     }
   }
@@ -468,10 +612,12 @@ void CompLooper::Loop(bool applyScaleFacs){
 
   // Scaling
   if (!_norm){
+    if (_doEE) _ntupleEE->GetEntry(0);
     if (_isT1MC){
       _ntuple1->GetEntry(0);
       //std::cout << "summedWeights1=" << summedWeights1 << std::endl;
-      float histScaling1 = _kfac1 * _xsec1 * _lumi / summedWeights1;
+      float histScaling1 = _kfac1 * _xsec1 * _lumi;
+      //histScaling1 /= (_doEE? summedWeights1+summedWeightsEE : summedWeights1);
       InvMass4l_1->Scale(histScaling1);
       InvMass12_1->Scale(histScaling1);
       InvMass34_1->Scale(histScaling1);
@@ -483,7 +629,8 @@ void CompLooper::Loop(bool applyScaleFacs){
     if (_isT2MC){
       _ntuple2->GetEntry(0);
       //std::cout << "summedWeights2=" << summedWeights2 << std::endl;
-      float histScaling2 = _kfac2 * _xsec2 * _lumi / summedWeights2;
+      float histScaling2 = _kfac2 * _xsec2 * _lumi;
+      //histScaling2 /= (_doEE? summedWeights2+summedWeightsEE : summedWeights2);
       InvMass4l_2->Scale(histScaling2);
       InvMass12_2->Scale(histScaling2);
       InvMass34_2->Scale(histScaling2);
@@ -570,6 +717,7 @@ void CompLooper::Loop(bool applyScaleFacs){
         readme << "  - k-factor: " << _kfac2 << std::endl;
       }
       if (applyScaleFacs) readme << "Efficiency SFs applied." << std::endl;
+      if (_doEE) readme << "MC pre- and postEE samples weighted." << std::endl;
       readme.close();
     }
 
@@ -646,8 +794,9 @@ void CompLooper::Loop(bool applyScaleFacs){
 #include "interface/argparse.h"
 int main(int nargs, char *argv[]){
   float kfac;
-  kfac = 1.2; //qqZZ kfac ~1.1 plus missing ggZZ signal
-  //kfac = 1.1 * 1.01587 * 1.0004874; //qqZZ kfac * expected ggZZ signal * expected EWK signal
+  kfac = 1.2; //qqZZ kfac ~1.1 plus esimated missing ggZZ signal
+  //kfac = 1.0835 * 1.01587 * 1.0004874;//qqZZ kfac * expected ggZZ signal * expected EWK signal
+  kfac = 1.0835;
   std::stringstream ss_kfac; ss_kfac << kfac;
 
   auto parser = argparse::ArgumentParser(nargs, argv)
@@ -677,6 +826,8 @@ int main(int nargs, char *argv[]){
     .help("if true, scale histograms to 1");
   parser.add_argument<bool>("--deduplicate").def("false")
     .help("if true, skip events whose event number has already been processed");
+  parser.add_argument<bool>("--EE").def("false")
+    .help("if true, the looper will analyze MC samples with weights for pre- and postEE comparison.");
   parser.add_argument<bool>("-r", "--recreate").def("false")
     .help("if true, the output file will be recreated for the given channel(s)");
   parser.add_argument<bool>("--noplots").def("false")
@@ -711,6 +862,7 @@ int main(int nargs, char *argv[]){
     l.SetNorm(args["norm"]);
     l.SetDeduplicate(args["deduplicate"]);
     l.SetPlotFiletype(args["filetype"]);
+    l.SetEE(args["EE"]);
     
     if (args["mc1"].is_true()){
       l.SetMC1();
