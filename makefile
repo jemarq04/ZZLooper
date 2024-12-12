@@ -1,9 +1,9 @@
 CC=g++
-FLAGS=`root-config --cflags --libs` -lGenVector -o 
+FLAGS=`root-config --cflags --libs` -lGenVector
 CORR_FLAGS=`correction config --cflags --ldflags --rpath`
 CFLAGS=`root-config --cflags` -c -g
 CORR_CFLAGS=`correction config --cflags`
-LFLAGS=`root-config --libs` -lGenVector -g -o
+LFLAGS=`root-config --libs` -lGenVector -g
 CORR_LFLAGS=`correction config --ldflags --rpath`
 EXEC=loop
 
@@ -20,11 +20,11 @@ all: ZZSlimmer loopers
 
 loopers: ZZLooper CompLooper
 
-ZZSlimmer: ZZSlimmer.cc interface/ZZSlimmerBase.h interface/argparse.h; $(CC) $(FLAGS) $@ $<
+ZZSlimmer: ZZSlimmer.cc interface/ZZSlimmerBase.h interface/argparse.h; $(CC) $< -o $@ $(FLAGS)
 
-ZZLooper: ZZLooper.cc interface/ZZLooperBase.h interface/argparse.h; $(CC) $(FLAGS) $@ $<
+ZZLooper: ZZLooper.cc interface/ZZLooperBase.h interface/argparse.h; $(CC) $< -o $@ $(FLAGS)
 
-CompLooper: CompLooper.o RatioPlotter.o; $(CC) $(LFLAGS) $@ $^
+CompLooper: CompLooper.o RatioPlotter.o; $(CC) $^ -o $@ $(LFLAGS)
 
 CompLooper.o: CompLooper.cc interface/CompLooperBase.h interface/argparse.h; $(CC) $(CFLAGS) $<
 
