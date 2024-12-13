@@ -82,8 +82,10 @@ void ZZSlimmer::Slim(){
     _ntuple->SetBranchStatus((lep + "ZZTightIDNoVtx").c_str(), 1);
     if (lep[0] == 'e'){
       cutstring += lep + "SIP3D < 4.0 && "; 
-      _ntuple->SetBranchStatus((lep + "SIP3D").c_str(), 1);
     }
+    _ntuple->SetBranchStatus((lep + "SIP3D").c_str(), 1);
+    _ntuple->SetBranchStatus((lep + "ZZIsoPass").c_str(), 1);
+    _ntuple->SetBranchStatus((lep + "ZZIso").c_str(), 1);
   }
   cutstring = cutstring.substr(0, cutstring.size()-4);
   if (_nocuts) cutstring = "";
