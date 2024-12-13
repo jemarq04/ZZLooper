@@ -746,6 +746,36 @@ void CompLooper::Loop(bool applyScaleFacs){
   }
   std::cout << "End looping." << std::endl;
 
+  // Writing README
+  if (plot || _makePlots){
+    std::ofstream readme((dirname + "/README").c_str());
+    if (readme.is_open()){
+      readme << _label1 << " Events: " << InvMass4l_1->GetEntries() << std::endl;
+      readme << _label2 << " Events: " << InvMass4l_2->GetEntries() << std::endl;
+      if (_isT1MC && !_norm){
+        _ntuple1->GetEntry(0);
+        float histScaling1 = _kfac1 * _xsec1 * _lumi / summedWeights1;
+        readme << _label1 << " Scaling: " << histScaling1 << std::endl;
+        readme << "  - Cross-section: " << _xsec1 << " fb" << std::endl;
+        readme << "  - Luminosity: " << _lumi << " fb-1" << std::endl;
+        readme << "  - Summed Weights: " << summedWeights1 << std::endl;
+        readme << "  - k-factor: " << _kfac1 << std::endl;
+      }
+      if (_isT2MC && !_norm){
+        _ntuple2->GetEntry(0);
+        float histScaling2 = _kfac2 * _xsec2 * _lumi / summedWeights2;
+        readme << _label2 << " Scaling: " << histScaling2 << std::endl;
+        readme << "  - Cross-section: " << _xsec2 << " fb" << std::endl;
+        readme << "  - Luminosity: " << _lumi << " fb-1" << std::endl;
+        readme << "  - Summed Weights: " << summedWeights2 << std::endl;
+        readme << "  - k-factor: " << _kfac2 << std::endl;
+      }
+      if (applyScaleFacs) readme << "Efficiency SFs applied." << std::endl;
+      if (_doEE) readme << "MC pre- and postEE samples weighted." << std::endl;
+      readme.close();
+    }
+  }
+
   // Creating subdirs in histfile
   histout->cd();
   histout->rmdir(_channel.c_str());
@@ -832,36 +862,11 @@ void CompLooper::Loop(bool applyScaleFacs){
     hist1->Write();
     if (subsubdir2 != nullptr) subsubdir2->cd();
     hist2->Write();
+
+    delete hist1;
+    delete hist2;
   }
   
-  // Writing README
-  if (plot || _makePlots){
-    std::ofstream readme((dirname + "/README").c_str());
-    if (readme.is_open()){
-      readme << _label1 << " Events: " << InvMass4l_1->GetEntries() << std::endl;
-      readme << _label2 << " Events: " << InvMass4l_2->GetEntries() << std::endl;
-      if (_isT1MC && !_norm){
-        float histScaling1 = _kfac1 * _xsec1 * _lumi / summedWeights1;
-        readme << _label1 << " Scaling: " << histScaling1 << std::endl;
-        readme << "  - Cross-section: " << _xsec1 << " fb" << std::endl;
-        readme << "  - Luminosity: " << _lumi << " fb-1" << std::endl;
-        readme << "  - Summed Weights: " << summedWeights1 << std::endl;
-        readme << "  - k-factor: " << _kfac1 << std::endl;
-      }
-      if (_isT2MC && !_norm){
-        float histScaling2 = _kfac2 * _xsec2 * _lumi / summedWeights2;
-        readme << _label2 << " Scaling: " << histScaling2 << std::endl;
-        readme << "  - Cross-section: " << _xsec2 << " fb" << std::endl;
-        readme << "  - Luminosity: " << _lumi << " fb-1" << std::endl;
-        readme << "  - Summed Weights: " << summedWeights2 << std::endl;
-        readme << "  - k-factor: " << _kfac2 << std::endl;
-      }
-      if (applyScaleFacs) readme << "Efficiency SFs applied." << std::endl;
-      if (_doEE) readme << "MC pre- and postEE samples weighted." << std::endl;
-      readme.close();
-    }
-  }
-
   // Ratio Plots
   if (ratioplot || _makeRatios){
   }
