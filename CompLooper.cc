@@ -24,6 +24,7 @@ class CompLooper : public CompLooperBase {
     ~CompLooper();
 
     //Debug
+    void SetDebug(bool debug=true){_debug = debug;}
     void SetNorm(bool norm=true){_norm = norm;}
     void SetDeduplicate(bool deduplicate=true){_deduplicate=deduplicate;}
 
@@ -37,6 +38,7 @@ class CompLooper : public CompLooperBase {
     void Loop(bool applyScaleFacs=false);
   private:
     std::string FindFile(const char *label);
+    bool _debug = false;
     bool _makePlots = false, _makeRatios = false;
     bool _norm = false, _deduplicate = false;
     std::string _label1, _label2;
@@ -238,11 +240,12 @@ void CompLooper::Loop(bool applyScaleFacs){
   // Binning
   std::vector<Double_t> InvMass_4l_binning   = {100.0, 200.0, 250.0, 300.0, 350.0, 400.0, 500.0, 600.0, 800.0, 1000.0, 1200.0, 1500.0};
   std::vector<Double_t> InvMass_pair_binning = {0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120.};
-  std::vector<Double_t> LepPt_binning        = {0., 30., 50., 100., 200.};
+  std::vector<Double_t> LepPt_binning        = {0., 5., 30., 50., 100., 200.};
 
   // Declaring Histograms
   std::vector<std::string> histnames = {
-    "InvMass4l", "InvMass12", "InvMass34", "LepEnergy", "LepPt", "PolCosTheta12", "PolCosTheta34",
+    "InvMass4l", "InvMass12", "InvMass34", "LepEnergy", "LepPt", "LepEta",
+    "PolCosTheta12", "PolCosTheta34",
     "LepZZIsoVal", "LepZZIsoPass", "LepSIP3D"
   };
 
@@ -252,6 +255,7 @@ void CompLooper::Loop(bool applyScaleFacs){
   TH1F *InvMass34_1 = new TH1F("InvMass34_1", TString::Format("Secondary Lepton Pair Invariant Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy_1 = new TH1F("LepEnergy_1", TString::Format("Lepton Energy (%s)", _label1.c_str()), 60, 0, 600);
   TH1F *LepPt_1 = new TH1F("LepPt_1", TString::Format("Lepton Transverse Momentum (%s)", _label1.c_str()), LepPt_binning.size()-1, &LepPt_binning[0]);
+  TH1F *LepEta_1 = new TH1F("LepEta_1", TString::Format("Lepton Psuedorapidity (%s)", _label1.c_str()), 20, -5, 5);
   TH1F *PolCosTheta12_1 = new TH1F("PolCosTheta12_1", TString::Format("cos#theta_{12}* (%s)", _label1.c_str()), 50, -1, 1);
   TH1F *PolCosTheta34_1 = new TH1F("PolCosTheta34_1", TString::Format("cos#theta_{34}* (%s)", _label1.c_str()), 50, -1, 1);
   TH1F *LepZZIsoVal_1 = new TH1F("LepZZIsoVal_1", TString::Format("Isolation Value (%s)", _label1.c_str()), 10, 0, 0.5);
@@ -262,6 +266,7 @@ void CompLooper::Loop(bool applyScaleFacs){
   SetTitles(InvMass34_1, "m_{Z_{2}} [GeV]");
   SetTitles(LepEnergy_1, "E_{l} [GeV]");
   SetTitles(LepPt_1, "p_{l,T} [GeV]");
+  SetTitles(LepEta_1, "#eta");
   SetTitles(PolCosTheta12_1, "cos#theta_{12}*");
   SetTitles(PolCosTheta34_1, "cos#theta_{34}*");
   SetTitles(LepZZIsoVal_1, "Isolation");
@@ -273,6 +278,7 @@ void CompLooper::Loop(bool applyScaleFacs){
   TH1F *InvMass34_2 = new TH1F("InvMass34_2", TString::Format("Secondary Lepton Pair Invariant Mass (%s)", _label2.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy_2 = new TH1F("LepEnergy_2", TString::Format("Lepton Energy (%s)", _label2.c_str()), 60, 0, 600);
   TH1F *LepPt_2 = new TH1F("LepPt_2", TString::Format("Lepton Transverse Momentum (%s)", _label2.c_str()), LepPt_binning.size()-1, &LepPt_binning[0]);
+  TH1F *LepEta_2 = new TH1F("LepEta_2", TString::Format("Lepton Psuedorapidity (%s)", _label2.c_str()), 20, -5, 5);
   TH1F *PolCosTheta12_2 = new TH1F("PolCosTheta12_2", TString::Format("cos#theta_{12}* (%s)", _label2.c_str()), 50, -1, 1);
   TH1F *PolCosTheta34_2 = new TH1F("PolCosTheta34_2", TString::Format("cos#theta_{34}* (%s)", _label2.c_str()), 50, -1, 1);
   TH1F *LepZZIsoVal_2 = new TH1F("LepZZIsoVal_2", TString::Format("Isolation Value (%s)", _label2.c_str()), 10, 0, 0.5);
@@ -283,6 +289,7 @@ void CompLooper::Loop(bool applyScaleFacs){
   SetTitles(InvMass34_2, "m_{Z_{2}} [GeV]");
   SetTitles(LepEnergy_2, "E_{l} [GeV]");
   SetTitles(LepPt_2, "p_{l,T} [GeV]");
+  SetTitles(LepEta_2, "#eta");
   SetTitles(PolCosTheta12_2, "cos#theta_{12}*");
   SetTitles(PolCosTheta34_2, "cos#theta_{34}*");
   SetTitles(LepZZIsoVal_2, "Isolation");
@@ -425,6 +432,11 @@ void CompLooper::Loop(bool applyScaleFacs){
         LepPt_1->Fill(l3Pt, weight);
         LepPt_1->Fill(l4Pt, weight);
 
+        LepEta_1->Fill(l1Eta, weight);
+        LepEta_1->Fill(l2Eta, weight);
+        LepEta_1->Fill(l3Eta, weight);
+        LepEta_1->Fill(l4Eta, weight);
+
         PolCosTheta12_1->Fill(GetPolCosTheta(lp1, ln1), weight);
         PolCosTheta34_1->Fill(GetPolCosTheta(lp2, ln2), weight);
 
@@ -559,6 +571,11 @@ void CompLooper::Loop(bool applyScaleFacs){
         LepPt_2->Fill(l3Pt, weight);
         LepPt_2->Fill(l4Pt, weight);
 
+        LepEta_2->Fill(l1Eta, weight);
+        LepEta_2->Fill(l2Eta, weight);
+        LepEta_2->Fill(l3Eta, weight);
+        LepEta_2->Fill(l4Eta, weight);
+
         PolCosTheta12_2->Fill(GetPolCosTheta(lp1, ln1), weight);
         PolCosTheta34_2->Fill(GetPolCosTheta(lp2, ln2), weight);
 
@@ -690,6 +707,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           LepPt_1->Fill(l3Pt, weight);
           LepPt_1->Fill(l4Pt, weight);
 
+          LepEta_1->Fill(l1Eta, weight);
+          LepEta_1->Fill(l2Eta, weight);
+          LepEta_1->Fill(l3Eta, weight);
+          LepEta_1->Fill(l4Eta, weight);
+
           PolCosTheta12_1->Fill(GetPolCosTheta(lp1, ln1), weight);
           PolCosTheta34_1->Fill(GetPolCosTheta(lp2, ln2), weight);
 
@@ -722,6 +744,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           LepPt_2->Fill(l2Pt, weight);
           LepPt_2->Fill(l3Pt, weight);
           LepPt_2->Fill(l4Pt, weight);
+
+          LepEta_2->Fill(l1Eta, weight);
+          LepEta_2->Fill(l2Eta, weight);
+          LepEta_2->Fill(l3Eta, weight);
+          LepEta_2->Fill(l4Eta, weight);
 
           PolCosTheta12_2->Fill(GetPolCosTheta(lp1, ln1), weight);
           PolCosTheta34_2->Fill(GetPolCosTheta(lp2, ln2), weight);
@@ -887,6 +914,8 @@ int main(int nargs, char *argv[]){
   auto parser = argparse::ArgumentParser(nargs, argv)
     .formatter_class(argparse::HelpFormatter::ArgumentDefaults);
 
+  parser.add_argument<bool>("--debug").def("false")
+    .help("if true, perform extra code for testing purposes");
   parser.add_argument<bool>("--mc1").def("false")
     .help("if true, consider first input to be MC");
   parser.add_argument<bool>("--mc2").def("false")
@@ -944,6 +973,7 @@ int main(int nargs, char *argv[]){
     CompLooper l(args["name"].c_str(), channel.c_str(), args["label1"].c_str(), args["label2"].c_str());
     if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.SetMakePlots(!args["noplots"].is_true());
+    l.SetDebug(args["debug"]);
     l.SetNorm(args["norm"]);
     l.SetDeduplicate(args["deduplicate"]);
     l.SetPlotFiletype(args["filetype"]);
