@@ -123,8 +123,8 @@ int main(int nargs, char *argv[]){
   auto parser = argparse::ArgumentParser(nargs, argv)
     .formatter_class(argparse::HelpFormatter::ArgumentDefaults);
 
-  parser.add_argument<bool>("-v", "--verbose").def("false")
-    .help("if true, script will be more verbose");
+  parser.add_argument<bool>("-q", "--quiet").def("false")
+    .help("if true, script will be silent");
   parser.add_argument<bool>("--nocuts").def("false")
     .help("if true, don't apply any cuts to data");
   parser.add_argument<bool>("--mc").def("false")
@@ -156,7 +156,7 @@ int main(int nargs, char *argv[]){
   int index=0;
   for (std::string channel : channels){
     ZZSlimmer l(args["label"].c_str(), channel.c_str());
-    l.SetVerbose(args["verbose"]);
+    l.SetVerbose(!args["quiet"].is_true());
     l.AddFromFile(filename.c_str());
     l.SetMC(args["mc"]);
     l.SetNoCuts(args["nocuts"]);
