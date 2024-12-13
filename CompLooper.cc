@@ -241,6 +241,12 @@ void CompLooper::Loop(bool applyScaleFacs){
   std::vector<Double_t> LepPt_binning        = {0., 30., 50., 100., 200.};
 
   // Declaring Histograms
+  std::vector<std::string> histnames = {
+    "InvMass4l", "InvMass12", "InvMass34", "LepEnergy", "LepPt", "PolCosTheta12", "PolCosTheta34",
+    "LepZZIsoVal", "LepZZIsoPass", "LepSIP3D"
+  };
+
+  gROOT->cd();
   TH1F *InvMass4l_1 = new TH1F("InvMass4l_1", TString::Format("4-Lepton Invariant Mass (%s)", _label1.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
   TH1F *InvMass12_1 = new TH1F("InvMass12_1", TString::Format("Primary Lepton Pair Invariant Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass34_1 = new TH1F("InvMass34_1", TString::Format("Secondary Lepton Pair Invariant Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
@@ -248,6 +254,9 @@ void CompLooper::Loop(bool applyScaleFacs){
   TH1F *LepPt_1 = new TH1F("LepPt_1", TString::Format("Lepton Transverse Momentum (%s)", _label1.c_str()), LepPt_binning.size()-1, &LepPt_binning[0]);
   TH1F *PolCosTheta12_1 = new TH1F("PolCosTheta12_1", TString::Format("cos#theta_{12}* (%s)", _label1.c_str()), 50, -1, 1);
   TH1F *PolCosTheta34_1 = new TH1F("PolCosTheta34_1", TString::Format("cos#theta_{34}* (%s)", _label1.c_str()), 50, -1, 1);
+  TH1F *LepZZIsoVal_1 = new TH1F("LepZZIsoVal_1", TString::Format("Isolation Value (%s)", _label1.c_str()), 10, 0, 0.5);
+  TH1F *LepZZIsoPass_1 = new TH1F("LepZZIsoPass_1", TString::Format("Isolation Cut (%s)", _label1.c_str()), 2, 0, 2);
+  TH1F *LepSIP3D_1 = new TH1F("LepSIP3D_1", TString::Format("Sip3D (%s)", _label1.c_str()), 10, 0, 5);
   SetTitles(InvMass4l_1, "m_{4l} [GeV]");
   SetTitles(InvMass12_1, "m_{Z_{1}} [GeV]");
   SetTitles(InvMass34_1, "m_{Z_{2}} [GeV]");
@@ -255,6 +264,9 @@ void CompLooper::Loop(bool applyScaleFacs){
   SetTitles(LepPt_1, "p_{l,T} [GeV]");
   SetTitles(PolCosTheta12_1, "cos#theta_{12}*");
   SetTitles(PolCosTheta34_1, "cos#theta_{34}*");
+  SetTitles(LepZZIsoVal_1, "Isolation");
+  SetTitles(LepZZIsoPass_1, "Pass");
+  SetTitles(LepSIP3D_1, "SIP3D");
 
   TH1F *InvMass4l_2 = new TH1F("InvMass4l_2", TString::Format("4-Lepton Invariant Mass (%s)", _label2.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
   TH1F *InvMass12_2 = new TH1F("InvMass12_2", TString::Format("Primary Lepton Pair Invariant Mass (%s)", _label2.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
@@ -263,6 +275,9 @@ void CompLooper::Loop(bool applyScaleFacs){
   TH1F *LepPt_2 = new TH1F("LepPt_2", TString::Format("Lepton Transverse Momentum (%s)", _label2.c_str()), LepPt_binning.size()-1, &LepPt_binning[0]);
   TH1F *PolCosTheta12_2 = new TH1F("PolCosTheta12_2", TString::Format("cos#theta_{12}* (%s)", _label2.c_str()), 50, -1, 1);
   TH1F *PolCosTheta34_2 = new TH1F("PolCosTheta34_2", TString::Format("cos#theta_{34}* (%s)", _label2.c_str()), 50, -1, 1);
+  TH1F *LepZZIsoVal_2 = new TH1F("LepZZIsoVal_2", TString::Format("Isolation Value (%s)", _label2.c_str()), 10, 0, 0.5);
+  TH1F *LepZZIsoPass_2 = new TH1F("LepZZIsoPass_2", TString::Format("Isolation Cut (%s)", _label2.c_str()), 2, 0, 2);
+  TH1F *LepSIP3D_2 = new TH1F("LepSIP3D_2", TString::Format("Sip3D (%s)", _label2.c_str()), 10, 0, 5);
   SetTitles(InvMass4l_2, "m_{4l} [GeV]");
   SetTitles(InvMass12_2, "m_{Z_{1}} [GeV]");
   SetTitles(InvMass34_2, "m_{Z_{2}} [GeV]");
@@ -270,6 +285,9 @@ void CompLooper::Loop(bool applyScaleFacs){
   SetTitles(LepPt_2, "p_{l,T} [GeV]");
   SetTitles(PolCosTheta12_2, "cos#theta_{12}*");
   SetTitles(PolCosTheta34_2, "cos#theta_{34}*");
+  SetTitles(LepZZIsoVal_2, "Isolation");
+  SetTitles(LepZZIsoPass_2, "Pass");
+  SetTitles(LepSIP3D_2, "SIP3D");
 
   Long64_t nentries1 = _ntuple1->GetEntries();
   Long64_t nentries2 = _ntuple2->GetEntries();
@@ -286,6 +304,9 @@ void CompLooper::Loop(bool applyScaleFacs){
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
   Float_t l4Pt, l4Eta, l4Phi, l4Energy;
   Int_t l1PdgId, l2PdgId, l3PdgId, l4PdgId;
+  Float_t l1ZZIso, l2ZZIso, l3ZZIso, l4ZZIso;
+  Bool_t l1ZZIsoPass, l2ZZIsoPass, l3ZZIsoPass, l4ZZIsoPass;
+  Float_t l1SIP3D, l2SIP3D, l3SIP3D, l4SIP3D;
   std::vector<ULong64_t> evts1={}, evts2={};
   std::cout << std::endl << "Begin looping over " << nentries << " entries..." << std::endl;
   for (unsigned int i=0; i<nentries; i++){
@@ -299,6 +320,12 @@ void CompLooper::Loop(bool applyScaleFacs){
         l4Pt = e4Pt1; l4Eta = e4Eta1; l4Phi = e4Phi1; l4Energy = e4Energy1;
         l1PdgId = e1PdgId1; l2PdgId = e2PdgId1;
         l3PdgId = e3PdgId1; l4PdgId = e4PdgId1;
+        l1ZZIso = e1ZZIso1; l2ZZIso = e2ZZIso1;
+        l3ZZIso = e3ZZIso1; l4ZZIso = e4ZZIso1;
+        l1ZZIsoPass = e1ZZIsoPass1; l2ZZIsoPass = e2ZZIsoPass1;
+        l3ZZIsoPass = e3ZZIsoPass1; l4ZZIsoPass = e4ZZIsoPass1;
+        l1SIP3D = e1SIP3D1; l2SIP3D = e2SIP3D1;
+        l3SIP3D = e3SIP3D1; l4SIP3D = e4SIP3D1;
       }
       else if (_channel == "eemm"){
         if (std::fabs(e1_e2_Mass1 - Z_MASS) < std::fabs(m1_m2_Mass1 - Z_MASS)){
@@ -309,6 +336,12 @@ void CompLooper::Loop(bool applyScaleFacs){
           l4Pt = m2Pt1; l4Eta = m2Eta1; l4Phi = m2Phi1; l4Energy = m2Energy1;
           l1PdgId = e1PdgId1; l2PdgId = e2PdgId1;
           l3PdgId = m1PdgId1; l4PdgId = m2PdgId1;
+          l1ZZIso = e1ZZIso1; l2ZZIso = e2ZZIso1;
+          l3ZZIso = m3ZZIso1; l4ZZIso = m4ZZIso1;
+          l1ZZIsoPass = e1ZZIsoPass1; l2ZZIsoPass = e2ZZIsoPass1;
+          l3ZZIsoPass = m3ZZIsoPass1; l4ZZIsoPass = m4ZZIsoPass1;
+          l1SIP3D = e1SIP3D1; l2SIP3D = e2SIP3D1;
+          l3SIP3D = m3SIP3D1; l4SIP3D = m4SIP3D1;
         }
         else{
           Z1mass = m1_m2_Mass1; Z2mass = e1_e2_Mass1;
@@ -318,6 +351,12 @@ void CompLooper::Loop(bool applyScaleFacs){
           l4Pt = e2Pt1; l4Eta = e2Eta1; l4Phi = e2Phi1; l4Energy = e2Energy1;
           l1PdgId = m1PdgId1; l2PdgId = m2PdgId1;
           l3PdgId = e1PdgId1; l4PdgId = e2PdgId1;
+          l1ZZIso = m1ZZIso1; l2ZZIso = m2ZZIso1;
+          l3ZZIso = e3ZZIso1; l4ZZIso = e4ZZIso1;
+          l1ZZIsoPass = m1ZZIsoPass1; l2ZZIsoPass = m2ZZIsoPass1;
+          l3ZZIsoPass = e3ZZIsoPass1; l4ZZIsoPass = e4ZZIsoPass1;
+          l1SIP3D = m1SIP3D1; l2SIP3D = m2SIP3D1;
+          l3SIP3D = e3SIP3D1; l4SIP3D = e4SIP3D1;
         }
       }
       else if (_channel == "mmmm"){
@@ -328,6 +367,12 @@ void CompLooper::Loop(bool applyScaleFacs){
         l4Pt = m4Pt1; l4Eta = m4Eta1; l4Phi = m4Phi1; l4Energy = m4Energy1;
         l1PdgId = m1PdgId1; l2PdgId = m2PdgId1;
         l3PdgId = m3PdgId1; l4PdgId = m4PdgId1;
+        l1ZZIso = m1ZZIso1; l2ZZIso = m2ZZIso1;
+        l3ZZIso = m3ZZIso1; l4ZZIso = m4ZZIso1;
+        l1ZZIsoPass = m1ZZIsoPass1; l2ZZIsoPass = m2ZZIsoPass1;
+        l3ZZIsoPass = m3ZZIsoPass1; l4ZZIsoPass = m4ZZIsoPass1;
+        l1SIP3D = m1SIP3D1; l2SIP3D = m2SIP3D1;
+        l3SIP3D = m3SIP3D1; l4SIP3D = m4SIP3D1;
       }
       // Set primary pair
       if (l1PdgId > 0){
@@ -382,6 +427,21 @@ void CompLooper::Loop(bool applyScaleFacs){
 
         PolCosTheta12_1->Fill(GetPolCosTheta(lp1, ln1), weight);
         PolCosTheta34_1->Fill(GetPolCosTheta(lp2, ln2), weight);
+
+        LepZZIsoVal_1->Fill(l1ZZIso, weight);
+        LepZZIsoVal_1->Fill(l2ZZIso, weight);
+        LepZZIsoVal_1->Fill(l3ZZIso, weight);
+        LepZZIsoVal_1->Fill(l4ZZIso, weight);
+
+        LepZZIsoPass_1->Fill(l1ZZIsoPass, weight);
+        LepZZIsoPass_1->Fill(l2ZZIsoPass, weight);
+        LepZZIsoPass_1->Fill(l3ZZIsoPass, weight);
+        LepZZIsoPass_1->Fill(l4ZZIsoPass, weight);
+
+        LepSIP3D_1->Fill(l1SIP3D, weight);
+        LepSIP3D_1->Fill(l2SIP3D, weight);
+        LepSIP3D_1->Fill(l3SIP3D, weight);
+        LepSIP3D_1->Fill(l4SIP3D, weight);
       }
     }
     if (_ntuple2->GetEntry(i) && std::find(evts2.begin(), evts2.end(), evt2) == evts2.end()){
@@ -394,6 +454,12 @@ void CompLooper::Loop(bool applyScaleFacs){
         l4Pt = e4Pt2; l4Eta = e4Eta2; l4Phi = e4Phi2; l4Energy = e4Energy2;
         l1PdgId = e1PdgId2; l2PdgId = e2PdgId2;
         l3PdgId = e3PdgId2; l4PdgId = e4PdgId2;
+        l1ZZIso = e1ZZIso2; l2ZZIso = e2ZZIso2;
+        l3ZZIso = e3ZZIso2; l4ZZIso = e4ZZIso2;
+        l1ZZIsoPass = e1ZZIsoPass2; l2ZZIsoPass = e2ZZIsoPass2;
+        l3ZZIsoPass = e3ZZIsoPass2; l4ZZIsoPass = e4ZZIsoPass2;
+        l1SIP3D = e1SIP3D2; l2SIP3D = e2SIP3D2;
+        l3SIP3D = e3SIP3D2; l4SIP3D = e4SIP3D2;
       }
       else if (_channel == "eemm"){
         if (std::fabs(e1_e2_Mass2 - Z_MASS) < std::fabs(m1_m2_Mass2 - Z_MASS)){
@@ -404,6 +470,12 @@ void CompLooper::Loop(bool applyScaleFacs){
           l4Pt = m2Pt2; l4Eta = m2Eta2; l4Phi = m2Phi2; l4Energy = m2Energy2;
           l1PdgId = e1PdgId2; l2PdgId = e2PdgId2;
           l3PdgId = m1PdgId2; l4PdgId = m2PdgId2;
+          l1ZZIso = e1ZZIso2; l2ZZIso = e2ZZIso2;
+          l3ZZIso = m3ZZIso2; l4ZZIso = m4ZZIso2;
+          l1ZZIsoPass = e1ZZIsoPass2; l2ZZIsoPass = e2ZZIsoPass2;
+          l3ZZIsoPass = m3ZZIsoPass2; l4ZZIsoPass = m4ZZIsoPass2;
+          l1SIP3D = e1SIP3D2; l2SIP3D = e2SIP3D2;
+          l3SIP3D = m3SIP3D2; l4SIP3D = m4SIP3D2;
         }
         else{
           Z1mass = m1_m2_Mass2; Z2mass = e1_e2_Mass2;
@@ -413,6 +485,12 @@ void CompLooper::Loop(bool applyScaleFacs){
           l4Pt = e2Pt2; l4Eta = e2Eta2; l4Phi = e2Phi2; l4Energy = e2Energy2;
           l1PdgId = m1PdgId2; l2PdgId = m2PdgId2;
           l3PdgId = e1PdgId2; l4PdgId = e2PdgId2;
+          l1ZZIso = m1ZZIso2; l2ZZIso = m2ZZIso2;
+          l3ZZIso = e3ZZIso2; l4ZZIso = e4ZZIso2;
+          l1ZZIsoPass = m1ZZIsoPass2; l2ZZIsoPass = m2ZZIsoPass2;
+          l3ZZIsoPass = e3ZZIsoPass2; l4ZZIsoPass = e4ZZIsoPass2;
+          l1SIP3D = m1SIP3D2; l2SIP3D = m2SIP3D2;
+          l3SIP3D = e3SIP3D2; l4SIP3D = e4SIP3D2;
         }
       }
       else if (_channel == "mmmm"){
@@ -423,6 +501,12 @@ void CompLooper::Loop(bool applyScaleFacs){
         l4Pt = m4Pt2; l4Eta = m4Eta2; l4Phi = m4Phi2; l4Energy = m4Energy2;
         l1PdgId = m1PdgId2; l2PdgId = m2PdgId2;
         l3PdgId = m3PdgId2; l4PdgId = m4PdgId2;
+        l1ZZIso = m1ZZIso2; l2ZZIso = m2ZZIso2;
+        l3ZZIso = m3ZZIso2; l4ZZIso = m4ZZIso2;
+        l1ZZIsoPass = m1ZZIsoPass2; l2ZZIsoPass = m2ZZIsoPass2;
+        l3ZZIsoPass = m3ZZIsoPass2; l4ZZIsoPass = m4ZZIsoPass2;
+        l1SIP3D = m1SIP3D2; l2SIP3D = m2SIP3D2;
+        l3SIP3D = m3SIP3D2; l4SIP3D = m4SIP3D2;
       }
       // Set primary pair
       if (l1PdgId > 0){
@@ -477,6 +561,21 @@ void CompLooper::Loop(bool applyScaleFacs){
 
         PolCosTheta12_2->Fill(GetPolCosTheta(lp1, ln1), weight);
         PolCosTheta34_2->Fill(GetPolCosTheta(lp2, ln2), weight);
+
+        LepZZIsoVal_2->Fill(l1ZZIso, weight);
+        LepZZIsoVal_2->Fill(l2ZZIso, weight);
+        LepZZIsoVal_2->Fill(l3ZZIso, weight);
+        LepZZIsoVal_2->Fill(l4ZZIso, weight);
+
+        LepZZIsoPass_2->Fill(l1ZZIsoPass, weight);
+        LepZZIsoPass_2->Fill(l2ZZIsoPass, weight);
+        LepZZIsoPass_2->Fill(l3ZZIsoPass, weight);
+        LepZZIsoPass_2->Fill(l4ZZIsoPass, weight);
+
+        LepSIP3D_2->Fill(l1SIP3D, weight);
+        LepSIP3D_2->Fill(l2SIP3D, weight);
+        LepSIP3D_2->Fill(l3SIP3D, weight);
+        LepSIP3D_2->Fill(l4SIP3D, weight);
       }
     }
     if (_doEE && _ntupleEE->GetEntry(i)){
@@ -488,6 +587,12 @@ void CompLooper::Loop(bool applyScaleFacs){
         l4Pt = e4PtEE; l4Eta = e4EtaEE; l4Phi = e4PhiEE; l4Energy = e4EnergyEE;
         l1PdgId = e1PdgIdEE; l2PdgId = e2PdgIdEE;
         l3PdgId = e3PdgIdEE; l4PdgId = e4PdgIdEE;
+        l1ZZIso = e1ZZIsoEE; l2ZZIso = e2ZZIsoEE;
+        l3ZZIso = e3ZZIsoEE; l4ZZIso = e4ZZIsoEE;
+        l1ZZIsoPass = e1ZZIsoPassEE; l2ZZIsoPass = e2ZZIsoPassEE;
+        l3ZZIsoPass = e3ZZIsoPassEE; l4ZZIsoPass = e4ZZIsoPassEE;
+        l1SIP3D = e1SIP3DEE; l2SIP3D = e2SIP3DEE;
+        l3SIP3D = e3SIP3DEE; l4SIP3D = e4SIP3DEE;
       }
       else if (_channel == "eemm"){
         if (std::fabs(e1_e2_MassEE - Z_MASS) < std::fabs(m1_m2_MassEE - Z_MASS)){
@@ -498,6 +603,12 @@ void CompLooper::Loop(bool applyScaleFacs){
           l4Pt = m2PtEE; l4Eta = m2EtaEE; l4Phi = m2PhiEE; l4Energy = m2EnergyEE;
           l1PdgId = e1PdgIdEE; l2PdgId = e2PdgIdEE;
           l3PdgId = m1PdgIdEE; l4PdgId = m2PdgIdEE;
+          l1ZZIso = e1ZZIsoEE; l2ZZIso = e2ZZIsoEE;
+          l3ZZIso = m3ZZIsoEE; l4ZZIso = m4ZZIsoEE;
+          l1ZZIsoPass = e1ZZIsoPassEE; l2ZZIsoPass = e2ZZIsoPassEE;
+          l3ZZIsoPass = m3ZZIsoPassEE; l4ZZIsoPass = m4ZZIsoPassEE;
+          l1SIP3D = e1SIP3DEE; l2SIP3D = e2SIP3DEE;
+          l3SIP3D = m3SIP3DEE; l4SIP3D = m4SIP3DEE;
         }
         else{
           Z1mass = m1_m2_MassEE; Z2mass = e1_e2_MassEE;
@@ -507,6 +618,12 @@ void CompLooper::Loop(bool applyScaleFacs){
           l4Pt = e2PtEE; l4Eta = e2EtaEE; l4Phi = e2PhiEE; l4Energy = e2EnergyEE;
           l1PdgId = m1PdgIdEE; l2PdgId = m2PdgIdEE;
           l3PdgId = e1PdgIdEE; l4PdgId = e2PdgIdEE;
+          l1ZZIso = m1ZZIsoEE; l2ZZIso = m2ZZIsoEE;
+          l3ZZIso = e3ZZIsoEE; l4ZZIso = e4ZZIsoEE;
+          l1ZZIsoPass = m1ZZIsoPassEE; l2ZZIsoPass = m2ZZIsoPassEE;
+          l3ZZIsoPass = e3ZZIsoPassEE; l4ZZIsoPass = e4ZZIsoPassEE;
+          l1SIP3D = m1SIP3DEE; l2SIP3D = m2SIP3DEE;
+          l3SIP3D = e3SIP3DEE; l4SIP3D = e4SIP3DEE;
         }
       }
       else if (_channel == "mmmm"){
@@ -517,6 +634,12 @@ void CompLooper::Loop(bool applyScaleFacs){
         l4Pt = m4PtEE; l4Eta = m4EtaEE; l4Phi = m4PhiEE; l4Energy = m4EnergyEE;
         l1PdgId = m1PdgIdEE; l2PdgId = m2PdgIdEE;
         l3PdgId = m3PdgIdEE; l4PdgId = m4PdgIdEE;
+        l1ZZIso = m1ZZIsoEE; l2ZZIso = m2ZZIsoEE;
+        l3ZZIso = m3ZZIsoEE; l4ZZIso = m4ZZIsoEE;
+        l1ZZIsoPass = m1ZZIsoPassEE; l2ZZIsoPass = m2ZZIsoPassEE;
+        l3ZZIsoPass = m3ZZIsoPassEE; l4ZZIsoPass = m4ZZIsoPassEE;
+        l1SIP3D = m1SIP3DEE; l2SIP3D = m2SIP3DEE;
+        l3SIP3D = m3SIP3DEE; l4SIP3D = m4SIP3DEE;
       }
       // Set primary pair
       if (l1PdgId > 0){
@@ -569,6 +692,21 @@ void CompLooper::Loop(bool applyScaleFacs){
 
           PolCosTheta12_1->Fill(GetPolCosTheta(lp1, ln1), weight);
           PolCosTheta34_1->Fill(GetPolCosTheta(lp2, ln2), weight);
+
+          LepZZIsoVal_1->Fill(l1ZZIso, weight);
+          LepZZIsoVal_1->Fill(l2ZZIso, weight);
+          LepZZIsoVal_1->Fill(l3ZZIso, weight);
+          LepZZIsoVal_1->Fill(l4ZZIso, weight);
+
+          LepZZIsoPass_1->Fill(l1ZZIsoPass, weight);
+          LepZZIsoPass_1->Fill(l2ZZIsoPass, weight);
+          LepZZIsoPass_1->Fill(l3ZZIsoPass, weight);
+          LepZZIsoPass_1->Fill(l4ZZIsoPass, weight);
+
+          LepSIP3D_1->Fill(l1SIP3D, weight);
+          LepSIP3D_1->Fill(l2SIP3D, weight);
+          LepSIP3D_1->Fill(l3SIP3D, weight);
+          LepSIP3D_1->Fill(l4SIP3D, weight);
         }
         else{
           InvMass4l_2->Fill(MassEE, weight);
@@ -587,112 +725,117 @@ void CompLooper::Loop(bool applyScaleFacs){
 
           PolCosTheta12_2->Fill(GetPolCosTheta(lp1, ln1), weight);
           PolCosTheta34_2->Fill(GetPolCosTheta(lp2, ln2), weight);
+
+          LepZZIsoVal_2->Fill(l1ZZIso, weight);
+          LepZZIsoVal_2->Fill(l2ZZIso, weight);
+          LepZZIsoVal_2->Fill(l3ZZIso, weight);
+          LepZZIsoVal_2->Fill(l4ZZIso, weight);
+
+          LepZZIsoPass_2->Fill(l1ZZIsoPass, weight);
+          LepZZIsoPass_2->Fill(l2ZZIsoPass, weight);
+          LepZZIsoPass_2->Fill(l3ZZIsoPass, weight);
+          LepZZIsoPass_2->Fill(l4ZZIsoPass, weight);
+
+          LepSIP3D_2->Fill(l1SIP3D, weight);
+          LepSIP3D_2->Fill(l2SIP3D, weight);
+          LepSIP3D_2->Fill(l3SIP3D, weight);
+          LepSIP3D_2->Fill(l4SIP3D, weight);
         }
       }
     }
   }
   std::cout << "End looping." << std::endl;
 
-  // Formatting
-  InvMass4l_1->SetMinimum(0);
-  InvMass12_1->SetMinimum(0);
-  InvMass34_1->SetMinimum(0);
-  LepEnergy_1->SetMinimum(0);
-  LepPt_1->SetMinimum(0);
-  PolCosTheta12_1->SetMinimum(0);
-  PolCosTheta34_1->SetMinimum(0);
-
-  InvMass4l_2->SetMinimum(0);
-  InvMass12_2->SetMinimum(0);
-  InvMass34_2->SetMinimum(0);
-  LepEnergy_2->SetMinimum(0);
-  LepPt_2->SetMinimum(0);
-  PolCosTheta12_2->SetMinimum(0);
-  PolCosTheta34_2->SetMinimum(0);
-
-  // Scaling
-  if (!_norm){
-    if (_isT1MC){
-      _ntuple1->GetEntry(0);
-      float histScaling1 = _kfac1 * _xsec1 * _lumi;
-      //Division by summedWeights is done when filling histos bc of EE analysis
-      InvMass4l_1->Scale(histScaling1);
-      InvMass12_1->Scale(histScaling1);
-      InvMass34_1->Scale(histScaling1);
-      LepEnergy_1->Scale(histScaling1);
-      LepPt_1->Scale(histScaling1);
-      PolCosTheta12_1->Scale(histScaling1);
-      PolCosTheta34_1->Scale(histScaling1);
-    }
-    if (_isT2MC){
-      _ntuple2->GetEntry(0);
-      float histScaling2 = _kfac2 * _xsec2 * _lumi;
-      //Division by summedWeights is done when filling histos bc of EE analysis
-      InvMass4l_2->Scale(histScaling2);
-      InvMass12_2->Scale(histScaling2);
-      InvMass34_2->Scale(histScaling2);
-      LepEnergy_2->Scale(histScaling2);
-      LepPt_2->Scale(histScaling2);
-      PolCosTheta12_2->Scale(histScaling2);
-      PolCosTheta34_2->Scale(histScaling2);
-    }
+  // Creating subdirs in histfile
+  histout->cd();
+  histout->rmdir(_channel.c_str());
+  TDirectory *subdir = histout->mkdir(_channel.c_str());
+  TDirectory *subsubdir1 = nullptr, *subsubdir2 = nullptr;
+  if (subdir != nullptr){
+    subdir->cd();
+    subsubdir1 = subdir->mkdir(_label1.c_str());
+    subsubdir2 = subdir->mkdir(_label2.c_str());
   }
-  else{
-    InvMass4l_1->Scale(1.0/InvMass4l_1->Integral());
-    InvMass12_1->Scale(1.0/InvMass12_1->Integral());
-    InvMass34_1->Scale(1.0/InvMass34_1->Integral());
-    LepEnergy_1->Scale(1.0/LepEnergy_1->Integral()); 
-    LepPt_1->Scale(1.0/LepPt_1->Integral());
-    PolCosTheta12_1->Scale(1.0/PolCosTheta12_1->Integral());
-    PolCosTheta34_1->Scale(1.0/PolCosTheta34_1->Integral());
 
-    InvMass4l_2->Scale(1.0/InvMass4l_2->Integral());
-    InvMass12_2->Scale(1.0/InvMass12_2->Integral());
-    InvMass34_2->Scale(1.0/InvMass34_2->Integral());
-    LepEnergy_2->Scale(1.0/LepEnergy_2->Integral()); 
-    LepPt_2->Scale(1.0/LepPt_2->Integral());
-    PolCosTheta12_2->Scale(1.0/PolCosTheta12_2->Integral());
-    PolCosTheta34_2->Scale(1.0/PolCosTheta34_2->Integral());
+  // Creating MC scale factors
+  // Division by summedWeights is done when filling histos bc of EE analysis
+  float histScaling1 = _kfac1 * _xsec1 * _lumi;
+  float histScaling2 = _kfac2 * _xsec2 * _lumi;
+
+  // Defining draw functions
+  std::vector<std::string> labels = {_label1, _label2};
+  auto Draw = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist, Ntuple ntuple){
+    int idx = ntuple == Ntuple::First? 0 : 1;
+    if (idx < 0) idx = 0;
+    else if (idx >= labels.size()) idx = labels.size()-1;
+    hist->Draw("hist");
+    c->SaveAs((dirname + "/" + labels[idx] + "/" + hist->GetName() + _filetype).c_str());
+  };
+	auto DrawSame = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist1, TH1* hist2){
+		std::string histname = hist1->GetName();
+		histname = histname.substr(0, histname.size()-2);
+		TH1 *hist1_clone = (TH1*)hist1->Clone(histname.c_str());
+		std::string title = hist1->GetTitle();
+		if (title.find(labels[0]) != std::string::npos){
+			title = title.substr(0, title.find(labels[0])-2);
+			hist1_clone->SetTitle(title.c_str());
+		}
+		Float_t max = (hist1->GetMaximum() > hist2->GetMaximum())?
+			hist1->GetMaximum() : hist2->GetMaximum();
+		hist1_clone->SetMaximum(max*1.2);
+		hist2->SetMaximum(max*1.2);
+
+		hist1_clone->Draw("hist");
+		hist2->SetLineColor(kRed);
+		hist2->Draw("hist same");
+
+		UInt_t idx = 0;
+		TLegend *legend = c->BuildLegend();
+		for (const TObject *obj : *legend->GetListOfPrimitives())
+			((TLegendEntry*)obj)->SetLabel(labels[idx++].c_str());
+		c->SaveAs((dirname + "/" + histname + _filetype).c_str());
+	};
+
+  // Finalizing
+  for (auto histname : histnames){
+    TH1F *hist1 = (TH1F*)gROOT->Get((histname + "_1").c_str());
+    TH1F *hist2 = (TH1F*)gROOT->Get((histname + "_2").c_str());
+    if (hist1 == nullptr || hist2 == nullptr){
+      std::cout << "Couldn't find hist(s). Skipping " << histname << std::endl;
+      break;
+    }
+    // Formatting
+    hist1->SetMinimum(0);
+    hist2->SetMinimum(0);
+
+    // Scaling
+    if (!_norm){
+      if (_isT1MC) hist1->Scale(histScaling1);
+      if (_isT2MC) hist2->Scale(histScaling2);
+    }
+    else{
+      hist1->Scale(1.0/hist1->Integral());
+      hist2->Scale(1.0/hist2->Integral());
+    }
+
+    // Drawing
+    if (plot || _makePlots){
+      c->cd();
+      Draw(hist1, Ntuple::First);
+      Draw(hist2, Ntuple::Second);
+      DrawSame(hist1, hist2);
+    }
+
+    // Writing
+    histout->cd();
+    if (subsubdir1 != nullptr) subsubdir1->cd();
+    hist1->Write();
+    if (subsubdir2 != nullptr) subsubdir2->cd();
+    hist2->Write();
   }
   
-  // Drawing
+  // Writing README
   if (plot || _makePlots){
-    c->cd();
-    std::vector<std::string> labels = {_label1, _label2};
-
-    auto Draw = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist, Ntuple ntuple){
-      int idx = ntuple == Ntuple::First? 0 : 1;
-      if (idx < 0) idx = 0;
-      else if (idx >= labels.size()) idx = labels.size()-1;
-      hist->Draw("hist");
-      c->SaveAs((dirname + "/" + labels[idx] + "/" + hist->GetName() + _filetype).c_str());
-    };
-    auto DrawSame = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist1, TH1* hist2){
-      std::string histname = hist1->GetName();
-      histname = histname.substr(0, histname.size()-2);
-      TH1 *hist1_clone = (TH1*)hist1->Clone(histname.c_str());
-      std::string title = hist1->GetTitle();
-      if (title.find(labels[0]) != std::string::npos){
-        title = title.substr(0, title.find(labels[0])-2);
-        hist1_clone->SetTitle(title.c_str());
-      }
-
-      Float_t max = (hist1->GetMaximum() > hist2->GetMaximum())?
-        hist1->GetMaximum() : hist2->GetMaximum();
-      hist1_clone->SetMaximum(max*1.2);
-      hist2->SetMaximum(max*1.2);
-
-      hist1_clone->Draw("hist");
-      hist2->SetLineColor(kRed);
-      hist2->Draw("hist same");
-
-      UInt_t idx = 0;
-      TLegend *legend = c->BuildLegend();
-      for (const TObject *obj : *legend->GetListOfPrimitives())
-        ((TLegendEntry*)obj)->SetLabel(labels[idx++].c_str());
-      c->SaveAs((dirname + "/" + histname + _filetype).c_str());
-    };
-
     std::ofstream readme((dirname + "/README").c_str());
     if (readme.is_open()){
       readme << _label1 << " Events: " << InvMass4l_1->GetEntries() << std::endl;
@@ -717,67 +860,7 @@ void CompLooper::Loop(bool applyScaleFacs){
       if (_doEE) readme << "MC pre- and postEE samples weighted." << std::endl;
       readme.close();
     }
-
-    Draw(InvMass4l_1, Ntuple::First);
-    Draw(InvMass12_1, Ntuple::First);
-    Draw(InvMass34_1, Ntuple::First);
-    Draw(LepEnergy_1, Ntuple::First);
-    Draw(LepPt_1, Ntuple::First);
-    Draw(PolCosTheta12_1, Ntuple::First);
-    Draw(PolCosTheta34_1, Ntuple::First);
-
-    Draw(InvMass4l_2, Ntuple::Second);
-    Draw(InvMass12_2, Ntuple::Second);
-    Draw(InvMass34_2, Ntuple::Second);
-    Draw(LepEnergy_2, Ntuple::Second);
-    Draw(LepPt_2, Ntuple::Second);
-    Draw(PolCosTheta12_2, Ntuple::Second);
-    Draw(PolCosTheta34_2, Ntuple::Second);
-
-    TLegend *legend;
-
-    DrawSame(InvMass4l_1, InvMass4l_2);
-    DrawSame(InvMass12_1, InvMass12_2);
-    DrawSame(InvMass34_1, InvMass34_2);
-    DrawSame(LepEnergy_1, LepEnergy_2);
-    DrawSame(LepPt_1, LepPt_2);
-    DrawSame(PolCosTheta12_1, PolCosTheta12_2);
-    DrawSame(PolCosTheta34_1, PolCosTheta34_2);
   }
-
-  // Writing
-  histout->cd();
-  histout->rmdir(_channel.c_str());
-  TDirectory *subdir = histout->mkdir(_channel.c_str());
-  if (subdir != nullptr){
-    subdir->cd();
-    subdir->rmdir(_label1.c_str());
-    TDirectory *subsubdir = subdir->mkdir(_label1.c_str());
-    if (subsubdir != nullptr) subsubdir->cd();
-  }
-
-  InvMass4l_1->Write();
-  InvMass12_1->Write();
-  InvMass34_1->Write();
-  LepEnergy_1->Write();
-  LepPt_1->Write();
-  PolCosTheta12_1->Write();
-  PolCosTheta34_1->Write();
-
-  if (subdir != nullptr){
-    subdir->cd();
-    subdir->rmdir(_label2.c_str());
-    TDirectory *subsubdir = subdir->mkdir(_label2.c_str());
-    if (subsubdir != nullptr) subsubdir->cd();
-  }
-
-  InvMass4l_2->Write();
-  InvMass12_2->Write();
-  InvMass34_2->Write();
-  LepEnergy_2->Write();
-  LepPt_2->Write();
-  PolCosTheta12_2->Write();
-  PolCosTheta34_2->Write();
 
   // Ratio Plots
   if (ratioplot || _makeRatios){
