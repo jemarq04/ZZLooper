@@ -1,6 +1,6 @@
 #ifndef ARGPARSE_H
 #define ARGPARSE_H
-#define ARGPARSE_VERSION 2.2.5
+#define ARGPARSE_VERSION 2.2.6
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -57,6 +57,19 @@ namespace argparse{
 		operator float() const;
 		operator double() const;
 		operator bool() const;
+
+		// Logical Operators
+		bool operator!() const{
+			return !(bool)*this;
+		}
+		template <typename T>
+		bool operator&&(const T& other) const{
+			return (bool)*this && other;
+		}
+		template <typename T>
+		bool operator||(const T& other) const{
+			return (bool)*this || other;
+		}
 		
 		// Comparison Operators
 		template <typename T>
@@ -127,6 +140,7 @@ namespace argparse{
 		// Accessors
 		bool is_none() const;
 		bool is_true() const;
+		bool is_false() const;
 	};
 
 
@@ -161,6 +175,19 @@ namespace argparse{
 		operator double() const;
 		operator bool() const;
 		operator std::string() const;
+
+		// Logical Operators
+		bool operator!() const{
+			return !(bool)at(0);
+		}
+		template <typename T>
+		bool operator&&(const T& other) const{
+			return (bool)at(0) && other;
+		}
+		template <typename T>
+		bool operator||(const T& other) const{
+			return (bool)at(0) || other;
+		}
 
 		// Comparison Operators
 		template <typename T>
@@ -197,31 +224,31 @@ namespace argparse{
 		// Arithmetic Operators
 		template <typename T>
 		ArgumentValueList operator+(const T& other) const{
-      std::vector<std::string> temp = {""};
+			ArgumentValueList temp = std::vector<std::string>{""};
 			temp.at(0) = (T)at(0) + other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator-(const T& other) const{
-      std::vector<std::string> temp = {""};
+			ArgumentValueList temp = std::vector<std::string>{""};
 			temp.at(0) = (T)at(0) - other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator*(const T& other) const{
-			ArgumentValueList temp = {""};
+			ArgumentValueList temp = std::vector<std::string>{""};
 			temp.at(0) = (T)at(0) * other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator/(const T& other) const{
-			ArgumentValueList temp = {""};
+			ArgumentValueList temp = std::vector<std::string>{""};
 			temp.at(0) = (T)at(0) / other;
 			return temp;
 		}
 		template <typename T>
 		ArgumentValueList operator%(const T& other) const{
-			ArgumentValueList temp = {""};
+			ArgumentValueList temp = std::vector<std::string>{""};
 			temp.at(0) = (T)at(0) % other;
 			return temp;
 		}
@@ -243,12 +270,9 @@ namespace argparse{
 		const char* c_str() const;
 		bool is_none() const;
 		bool is_true() const;
+		bool is_false() const;
 		std::vector<std::string> vec() const;
 	};
-	std::ostream& operator<<(std::ostream& os, const ArgumentValueList& arglist){
-		os << arglist.str();
-		return os;
-	}
 	typedef std::map<std::string, ArgumentValueList> ArgumentMap;
 	std::string format_args(ArgumentMap args);
 	void print_args(ArgumentMap args, std::ostream& out=std::cout);
@@ -624,6 +648,7 @@ namespace argparse{
 	// Accessors {{{2
 	bool ArgumentValue::is_none() const{return *this == NONE;}
 	bool ArgumentValue::is_true() const{return *this == TRUE;}
+	bool ArgumentValue::is_false() const{return *this != TRUE;}
 	
 	// === ARGUMENT VALUE LIST === {{{1
 	//
@@ -671,7 +696,7 @@ namespace argparse{
 	
 	// Arithmetic Operators {{{2
 	ArgumentValueList ArgumentValueList::operator+(const char* other) const{
-    std::vector<std::string> temp = {at(0) + other};
+		ArgumentValueList temp = std::vector<std::string>{at(0) + other};
 		return temp;
 	}
 	
@@ -693,6 +718,12 @@ namespace argparse{
 		return temp;
 	}	
 	
+	// Stream Operators {{{2
+	std::ostream& operator<<(std::ostream& os, const ArgumentValueList& arglist){
+		os << arglist.str();
+		return os;
+	}
+	
 	// Modifiers {{{2
 	void ArgumentValueList::str(const std::string& val){at(0) = val;}
 	
@@ -701,6 +732,7 @@ namespace argparse{
 	const char* ArgumentValueList::c_str() const{return at(0).c_str();}
 	bool ArgumentValueList::is_none() const{return at(0) == NONE;}
 	bool ArgumentValueList::is_true() const{return at(0) == TRUE;}
+	bool ArgumentValueList::is_false() const{return at(0) != TRUE;}
 	std::vector<std::string> ArgumentValueList::vec() const{
 		std::vector<std::string> result;
 		for (auto& val : *this) result.push_back((std::string)val);
