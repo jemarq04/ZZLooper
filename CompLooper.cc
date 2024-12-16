@@ -45,6 +45,7 @@ class CompLooper : public CompLooperBase {
     std::string _filetype = ".png", _mode = "UPDATE";
 #ifndef NOSF
     std::unique_ptr<correction::CorrectionSet> _pileupSF, _eIdSF, _eRecoSF, _mIdSF;
+    std::unique_ptr<correction::CorrectionSet> _pileupEESF, _eIdEESF, _eRecoEESF, _mIdEESF;
 #endif
 };
 
@@ -77,6 +78,7 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
     if (_eIdSF != nullptr){}
     if (_eRecoSF != nullptr){
       const auto recoref = (*_eRecoSF->begin()).second;
+      const auto recorefEE = (*_eRecoEESF->begin()).second;
       if (ntuple == Ntuple::First){
         if (e1Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1Pt1), e1Eta1, e1Pt1});
         if (e2Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt1), e2Eta1, e2Pt1});
@@ -90,10 +92,10 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (e4Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e4Pt2), e4Eta2, e4Pt2});
       }
       else{
-        if (e1PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1PtEE), e1EtaEE, e1PtEE});
-        if (e2PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2PtEE), e2EtaEE, e2PtEE});
-        if (e3PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e3PtEE), e3EtaEE, e3PtEE});
-        if (e4PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e4PtEE), e4EtaEE, e4PtEE});
+        if (e1PtEE > 10) weight *= recorefEE->evaluate({"2022Re-recoE+PromptFG", "sf", GetEleRecoSFName(e1PtEE), e1EtaEE, e1PtEE});
+        if (e2PtEE > 10) weight *= recorefEE->evaluate({"2022Re-recoE+PromptFG", "sf", GetEleRecoSFName(e2PtEE), e2EtaEE, e2PtEE});
+        if (e3PtEE > 10) weight *= recorefEE->evaluate({"2022Re-recoE+PromptFG", "sf", GetEleRecoSFName(e3PtEE), e3EtaEE, e3PtEE});
+        if (e4PtEE > 10) weight *= recorefEE->evaluate({"2022Re-recoE+PromptFG", "sf", GetEleRecoSFName(e4PtEE), e4EtaEE, e4PtEE});
       }
     }
   }
@@ -101,6 +103,7 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
     if (_eIdSF != nullptr){}
     if (_eRecoSF != nullptr){
       const auto recoref = (*_eRecoSF->begin()).second;
+      const auto recorefEE = (*_eRecoEESF->begin()).second;
       if (ntuple == Ntuple::First){
         if (e1Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1Pt1), e1Eta1, e1Pt1});
         if (e2Pt1 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt1), e2Eta1, e2Pt1});
@@ -110,8 +113,8 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (e2Pt2 > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt2), e2Eta2, e2Pt2});
       }
       else{
-        if (e1PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e1PtEE), e1EtaEE, e1PtEE});
-        if (e2PtEE > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2PtEE), e2EtaEE, e2PtEE});
+        if (e1PtEE > 10) weight *= recorefEE->evaluate({"2022Re-recoE+PromptFG", "sf", GetEleRecoSFName(e1PtEE), e1EtaEE, e1PtEE});
+        if (e2PtEE > 10) weight *= recorefEE->evaluate({"2022Re-recoE+PromptFG", "sf", GetEleRecoSFName(e2PtEE), e2EtaEE, e2PtEE});
       }
     }
     if (_mIdSF != nullptr){
@@ -124,8 +127,8 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (m2Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta2), m2Pt2, "nominal"});
       }
       else{
-        if (m1PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
-        if (m2PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
+        if (m1PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
+        if (m2PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
       }
     }
   }
@@ -144,10 +147,10 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
         if (m4Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta2), m4Pt2, "nominal"});
       }
       else{
-        if (m1PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
-        if (m2PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
-        if (m3PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3EtaEE), m3PtEE, "nominal"});
-        if (m4PtEE > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4EtaEE), m4PtEE, "nominal"});
+        if (m1PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
+        if (m2PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
+        if (m3PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3EtaEE), m3PtEE, "nominal"});
+        if (m4PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4EtaEE), m4PtEE, "nominal"});
       }
     }
   }
@@ -157,7 +160,7 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
     else if (ntuple == Ntuple::Second)
       weight *= (*_pileupSF->begin()).second->evaluate({nTruePU2, "nominal"});
     else
-      weight *= (*_pileupSF->begin()).second->evaluate({nTruePUEE, "nominal"});
+      weight *= (*_pileupEESF->begin()).second->evaluate({nTruePUEE, "nominal"});
   }
 #endif
   return weight;
@@ -227,9 +230,13 @@ void CompLooper::Loop(bool applyScaleFacs){
   if (applyScaleFacs && (_isT1MC || _isT2MC)){
     std::string basename = "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/";
     _pileupSF = correction::CorrectionSet::from_file(basename + "/LUM/2022_Summer22/puWeights.json.gz");
+    _pileupEESF = correction::CorrectionSet::from_file(basename + "/LUM/2022_Summer22EE/puWeights.json.gz");
     //_eIdSF = correction::CorrectionSet::from_file(basename + "/EGM/2022_Summer22/electron.json.gz");
+    //_eIdEESF = correction::CorrectionSet::from_file(basename + "/EGM/2022_Summer22EE/electron.json.gz");
     _eRecoSF = correction::CorrectionSet::from_file(basename + "/EGM/2022_Summer22/electron.json.gz");
+    _eRecoEESF = correction::CorrectionSet::from_file(basename + "/EGM/2022_Summer22EE/electron.json.gz");
     _mIdSF = correction::CorrectionSet::from_file(basename + "/MUO/2022_Summer22/muon_Z.json.gz");
+    _mIdEESF = correction::CorrectionSet::from_file(basename + "/MUO/2022_Summer22EE/muon_Z.json.gz");
     //if (_pileupSF != nullptr) std::cout << "Applying pileupSF..." << std::endl;
     //if (_eIdSF != nullptr) std::cout << "Applying eIdSF..." << std::endl;
     //if (_eRecoSF != nullptr) std::cout << "Applying eRecoSF..." << std::endl;
@@ -409,7 +416,8 @@ void CompLooper::Loop(bool applyScaleFacs){
       );
       */
 
-      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+      bool ZZIsoPass = l1ZZIsoPass && l2ZZIsoPass && l3ZZIsoPass && l4ZZIsoPass;
+      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0 && ZZIsoPass){ 
         Float_t weight = 1.;
         if (_isT1MC){
           weight *= genWeight1;
@@ -548,7 +556,8 @@ void CompLooper::Loop(bool applyScaleFacs){
       );
       */
 
-      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+      bool ZZIsoPass = l1ZZIsoPass && l2ZZIsoPass && l3ZZIsoPass && l4ZZIsoPass;
+      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0 && ZZIsoPass){ 
         Float_t weight = 1.;
         if (_isT2MC){
           weight *= genWeight2;
@@ -686,7 +695,8 @@ void CompLooper::Loop(bool applyScaleFacs){
       );
       */
 
-      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+      bool ZZIsoPass = l1ZZIsoPass && l2ZZIsoPass && l3ZZIsoPass && l4ZZIsoPass;
+      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0 && ZZIsoPass){ 
         Float_t weight = genWeightEE;
         if (applyScaleFacs) weight *= GetScaleFactor(Ntuple::EE);
         weight *= 0.8;
@@ -922,9 +932,9 @@ int main(int nargs, char *argv[]){
     .help("if true, consider second input to be MC");
   parser.add_argument<double>("-l", "--lumi").def("37.846170084") //2022
     .help("data luminosity to scale MC in fb-1");
-  parser.add_argument<double>("-x", "--xsec1").def("1390") //qqZZ
+  parser.add_argument<double>("-x", "--xsec1").def("1256") //qqZZ
     .help("cross-section of given MC process in fb for first input");
-  parser.add_argument<double>("-X", "--xsec2").def("1390") //qqZZ
+  parser.add_argument<double>("-X", "--xsec2").def("1256") //qqZZ
     .help("cross-section of given MC process in fb for second input");
   parser.add_argument<double>("-k", "--kfac1").def(ss_kfac.str()) //qqZZ kfac ~1.1 plus missing ggZZ signal
     .help("k-factor of given MC process for first input");
