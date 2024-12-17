@@ -156,11 +156,11 @@ int main(int nargs, char *argv[]){
   int index=0;
   for (std::string channel : channels){
     ZZSlimmer l(args["label"].c_str(), channel.c_str());
-    l.SetVerbose(!args["quiet"].is_true());
+    if ((index++)==0 && args["recreate"]) l.SetMode("recreate");
+    l.SetVerbose(!args["quiet"]);
     l.AddFromFile(filename.c_str());
     l.SetMC(args["mc"]);
     l.SetNoCuts(args["nocuts"]);
-    if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
     l.Slim();
   }
   

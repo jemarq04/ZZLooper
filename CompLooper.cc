@@ -981,8 +981,8 @@ int main(int nargs, char *argv[]){
   int index=0;
   for (std::string channel : channels){
     CompLooper l(args["name"].c_str(), channel.c_str(), args["label1"].c_str(), args["label2"].c_str());
-    if ((index++)==0 && args["recreate"].is_true()) l.SetMode("recreate");
-    l.SetMakePlots(!args["noplots"].is_true());
+    if ((index++)==0 && args["recreate"]) l.SetMode("recreate");
+    l.SetMakePlots(!args["noplots"]);
     l.SetDebug(args["debug"]);
     l.SetNorm(args["norm"]);
     l.SetDeduplicate(args["deduplicate"]);
