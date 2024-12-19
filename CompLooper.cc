@@ -856,11 +856,12 @@ void CompLooper::Loop(bool applyScaleFacs){
 		hist2->SetLineColor(kRed);
 		hist2->Draw("hist same");
 
-		UInt_t idx = 0;
-		TLegend *legend = c->BuildLegend();
-		for (const TObject *obj : *legend->GetListOfPrimitives())
-			((TLegendEntry*)obj)->SetLabel(labels[idx++].c_str());
+		TLegend *legend = new TLegend(0.3, 0.21, 0.3, 0.21, "");
+		legend->AddEntry(hist1_clone, labels[0].c_str());
+		legend->AddEntry(hist2, labels[1].c_str());
+		legend->Draw();
 		c->SaveAs((dirname + "/" + histname + _filetype).c_str());
+		delete hist1_clone;
 	};
 
   // Finalizing
