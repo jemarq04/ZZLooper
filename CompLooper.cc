@@ -351,11 +351,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           l1PdgId = e1PdgId1; l2PdgId = e2PdgId1;
           l3PdgId = m1PdgId1; l4PdgId = m2PdgId1;
           l1ZZIso = e1ZZIso1; l2ZZIso = e2ZZIso1;
-          l3ZZIso = m3ZZIso1; l4ZZIso = m4ZZIso1;
+          l3ZZIso = m1ZZIso1; l4ZZIso = m2ZZIso1;
           l1ZZIsoPass = e1ZZIsoPass1; l2ZZIsoPass = e2ZZIsoPass1;
-          l3ZZIsoPass = m3ZZIsoPass1; l4ZZIsoPass = m4ZZIsoPass1;
+          l3ZZIsoPass = m1ZZIsoPass1; l4ZZIsoPass = m2ZZIsoPass1;
           l1SIP3D = e1SIP3D1; l2SIP3D = e2SIP3D1;
-          l3SIP3D = m3SIP3D1; l4SIP3D = m4SIP3D1;
+          l3SIP3D = m1SIP3D1; l4SIP3D = m2SIP3D1;
         }
         else{
           Z1mass = m1_m2_Mass1; Z2mass = e1_e2_Mass1;
@@ -366,11 +366,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           l1PdgId = m1PdgId1; l2PdgId = m2PdgId1;
           l3PdgId = e1PdgId1; l4PdgId = e2PdgId1;
           l1ZZIso = m1ZZIso1; l2ZZIso = m2ZZIso1;
-          l3ZZIso = e3ZZIso1; l4ZZIso = e4ZZIso1;
+          l3ZZIso = e1ZZIso1; l4ZZIso = e2ZZIso1;
           l1ZZIsoPass = m1ZZIsoPass1; l2ZZIsoPass = m2ZZIsoPass1;
-          l3ZZIsoPass = e3ZZIsoPass1; l4ZZIsoPass = e4ZZIsoPass1;
+          l3ZZIsoPass = e1ZZIsoPass1; l4ZZIsoPass = e2ZZIsoPass1;
           l1SIP3D = m1SIP3D1; l2SIP3D = m2SIP3D1;
-          l3SIP3D = e3SIP3D1; l4SIP3D = e4SIP3D1;
+          l3SIP3D = e1SIP3D1; l4SIP3D = e2SIP3D1;
         }
       }
       else if (_channel == "mmmm"){
@@ -491,11 +491,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           l1PdgId = e1PdgId2; l2PdgId = e2PdgId2;
           l3PdgId = m1PdgId2; l4PdgId = m2PdgId2;
           l1ZZIso = e1ZZIso2; l2ZZIso = e2ZZIso2;
-          l3ZZIso = m3ZZIso2; l4ZZIso = m4ZZIso2;
+          l3ZZIso = m1ZZIso2; l4ZZIso = m2ZZIso2;
           l1ZZIsoPass = e1ZZIsoPass2; l2ZZIsoPass = e2ZZIsoPass2;
-          l3ZZIsoPass = m3ZZIsoPass2; l4ZZIsoPass = m4ZZIsoPass2;
+          l3ZZIsoPass = m1ZZIsoPass2; l4ZZIsoPass = m2ZZIsoPass2;
           l1SIP3D = e1SIP3D2; l2SIP3D = e2SIP3D2;
-          l3SIP3D = m3SIP3D2; l4SIP3D = m4SIP3D2;
+          l3SIP3D = m1SIP3D2; l4SIP3D = m2SIP3D2;
         }
         else{
           Z1mass = m1_m2_Mass2; Z2mass = e1_e2_Mass2;
@@ -506,11 +506,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           l1PdgId = m1PdgId2; l2PdgId = m2PdgId2;
           l3PdgId = e1PdgId2; l4PdgId = e2PdgId2;
           l1ZZIso = m1ZZIso2; l2ZZIso = m2ZZIso2;
-          l3ZZIso = e3ZZIso2; l4ZZIso = e4ZZIso2;
+          l3ZZIso = e1ZZIso2; l4ZZIso = e2ZZIso2;
           l1ZZIsoPass = m1ZZIsoPass2; l2ZZIsoPass = m2ZZIsoPass2;
-          l3ZZIsoPass = e3ZZIsoPass2; l4ZZIsoPass = e4ZZIsoPass2;
+          l3ZZIsoPass = e1ZZIsoPass2; l4ZZIsoPass = e2ZZIsoPass2;
           l1SIP3D = m1SIP3D2; l2SIP3D = m2SIP3D2;
-          l3SIP3D = e3SIP3D2; l4SIP3D = e4SIP3D2;
+          l3SIP3D = e1SIP3D2; l4SIP3D = e2SIP3D2;
         }
       }
       else if (_channel == "mmmm"){
@@ -630,11 +630,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           l1PdgId = e1PdgIdEE; l2PdgId = e2PdgIdEE;
           l3PdgId = m1PdgIdEE; l4PdgId = m2PdgIdEE;
           l1ZZIso = e1ZZIsoEE; l2ZZIso = e2ZZIsoEE;
-          l3ZZIso = m3ZZIsoEE; l4ZZIso = m4ZZIsoEE;
+          l3ZZIso = m1ZZIsoEE; l4ZZIso = m2ZZIsoEE;
           l1ZZIsoPass = e1ZZIsoPassEE; l2ZZIsoPass = e2ZZIsoPassEE;
-          l3ZZIsoPass = m3ZZIsoPassEE; l4ZZIsoPass = m4ZZIsoPassEE;
+          l3ZZIsoPass = m1ZZIsoPassEE; l4ZZIsoPass = m2ZZIsoPassEE;
           l1SIP3D = e1SIP3DEE; l2SIP3D = e2SIP3DEE;
-          l3SIP3D = m3SIP3DEE; l4SIP3D = m4SIP3DEE;
+          l3SIP3D = m1SIP3DEE; l4SIP3D = m2SIP3DEE;
         }
         else{
           Z1mass = m1_m2_MassEE; Z2mass = e1_e2_MassEE;
@@ -645,11 +645,11 @@ void CompLooper::Loop(bool applyScaleFacs){
           l1PdgId = m1PdgIdEE; l2PdgId = m2PdgIdEE;
           l3PdgId = e1PdgIdEE; l4PdgId = e2PdgIdEE;
           l1ZZIso = m1ZZIsoEE; l2ZZIso = m2ZZIsoEE;
-          l3ZZIso = e3ZZIsoEE; l4ZZIso = e4ZZIsoEE;
+          l3ZZIso = e1ZZIsoEE; l4ZZIso = e2ZZIsoEE;
           l1ZZIsoPass = m1ZZIsoPassEE; l2ZZIsoPass = m2ZZIsoPassEE;
-          l3ZZIsoPass = e3ZZIsoPassEE; l4ZZIsoPass = e4ZZIsoPassEE;
+          l3ZZIsoPass = e1ZZIsoPassEE; l4ZZIsoPass = e2ZZIsoPassEE;
           l1SIP3D = m1SIP3DEE; l2SIP3D = m2SIP3DEE;
-          l3SIP3D = e3SIP3DEE; l4SIP3D = e4SIP3DEE;
+          l3SIP3D = e1SIP3DEE; l4SIP3D = e2SIP3DEE;
         }
       }
       else if (_channel == "mmmm"){
