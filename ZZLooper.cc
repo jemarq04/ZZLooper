@@ -155,20 +155,37 @@ void ZZLooper::Loop(bool applyScaleFacs){
   std::vector<Double_t> InvMass4l_binning   = {100.0, 200.0, 250.0, 300.0, 350.0, 400.0, 500.0, 600.0, 800.0, 1000.0, 1200.0, 1500.0};
   std::vector<Double_t> InvMass_pair_binning = {0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 120.};
   std::vector<Double_t> LepPt_binning        = {0., 30., 50., 100., 200.};
-
+  
   // Declaring Histograms
+  gROOT->cd();
+  std::vector<std::string> histnames = {
+    "InvMass4l", "InvMass12", "InvMass34", "LepEnergy", "LepPt", "LepEta",
+    "PolCosTheta12", "PolCosTheta34",
+    "LepZZIsoVal", "LepZZIsoPass", "LepSIP3D"
+  };
+
   TH1F *InvMass4l = new TH1F("InvMass4l", "4-Lepton Invariant Mass", InvMass4l_binning.size()-1, &InvMass4l_binning[0]);
   TH1F *InvMass12 = new TH1F("InvMass12", "Primary Lepton Pair Invariant Mass", InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass34 = new TH1F("InvMass34", "Secondary Lepton Pair Invariant Mass", InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy = new TH1F("LepEnergy", "Lepton Energy", 60, 0, 600);
   TH1F *LepPt = new TH1F("LepPt", "Lepton Transverse Momentum", LepPt_binning.size()-1, &LepPt_binning[0]);
+  TH1F *LepEta = new TH1F("LepEta", "Lepton Pseudorapidity", 20, -5, 5);
   TH1F *PolCosTheta12 = new TH1F("PolCosTheta12", "cos#theta_{12}*", 50, -1, 1);
   TH1F *PolCosTheta34 = new TH1F("PolCosTheta34", "cos#theta_{34}*", 50, -1, 1);
+  TH1F *LepZZIsoVal = new TH1F("LepZZIsoVal", "Isolation Value", 10, 0, 0.5);
+  TH1F *LepZZIsoPass = new TH1F("LepZZIsoPass", "Isolation Cut", 2, 0, 2);
+  TH1F *LepSIP3D = new TH1F("LepSIP3D", "Sip3D", 10, 0, 5);
   SetTitles(InvMass4l, "m_{4l} [GeV]");
   SetTitles(InvMass12, "m_{Z_{1}} [GeV]");
   SetTitles(InvMass34, "m_{Z_{2}} [GeV]");
   SetTitles(LepEnergy, "E_{l} [GeV]");
   SetTitles(LepPt, "p_{l,T} [GeV]");
+  SetTitles(LepEta, "#eta");
+  SetTitles(PolCosTheta12, "cos#theta_{12}*");
+  SetTitles(PolCosTheta34, "cos#theta_{34}*");
+  SetTitles(LepZZIsoVal, "Isolation");
+  SetTitles(LepZZIsoPass, "Pass");
+  SetTitles(LepSIP3D, "SIP3D");
 
 
   Long64_t nentries = _ntuple->GetEntries();
@@ -179,9 +196,14 @@ void ZZLooper::Loop(bool applyScaleFacs){
   Float_t l3Pt, l3Eta, l3Phi, l3Energy;
   Float_t l4Pt, l4Eta, l4Phi, l4Energy;
   Int_t l1PdgId, l2PdgId, l3PdgId, l4PdgId;
+  Float_t l1ZZIso, l2ZZIso, l3ZZIso, l4ZZIso;
+  Bool_t l1ZZIsoPass, l2ZZIsoPass, l3ZZIsoPass, l4ZZIsoPass;
+  Float_t l1SIP3D, l2SIP3D, l3SIP3D, l4SIP3D;
   std::vector<ULong64_t> evts;
   std::cout << std::endl << "Begin looping over " << nentries << " entries..." << std::endl;
+  Int_t num_eemm = 0, num_mmee = 0;
   for (unsigned int i=0; i<nentries; i++){
+    Bool_t mmee = false;
     _ntuple->GetEntry(i);
     if (!_isMC && _deduplicate){
       if (std::find(evts.begin(), evts.end(), evt) != evts.end())
@@ -196,6 +218,12 @@ void ZZLooper::Loop(bool applyScaleFacs){
       l4Pt = e4Pt; l4Eta = e4Eta; l4Phi = e4Phi; l4Energy = e4Energy;
       l1PdgId = e1PdgId; l2PdgId = e2PdgId;
       l3PdgId = e3PdgId; l4PdgId = e4PdgId;
+      l1ZZIso = e1ZZIso; l2ZZIso = e2ZZIso;
+      l3ZZIso = e3ZZIso; l4ZZIso = e4ZZIso;
+      l1ZZIsoPass = e1ZZIsoPass; l2ZZIsoPass = e2ZZIsoPass;
+      l3ZZIsoPass = e3ZZIsoPass; l4ZZIsoPass = e4ZZIsoPass;
+      l1SIP3D = e1SIP3D; l2SIP3D = e2SIP3D;
+      l3SIP3D = e3SIP3D; l4SIP3D = e4SIP3D;
     }
     else if (_channel == "eemm"){
       if (std::fabs(e1_e2_Mass - Z_MASS) < std::fabs(m1_m2_Mass - Z_MASS)){
@@ -206,8 +234,15 @@ void ZZLooper::Loop(bool applyScaleFacs){
         l4Pt = m2Pt; l4Eta = m2Eta; l4Phi = m2Phi; l4Energy = m2Energy;
         l1PdgId = e1PdgId; l2PdgId = e2PdgId;
         l3PdgId = m1PdgId; l4PdgId = m2PdgId;
+        l1ZZIso = e1ZZIso; l2ZZIso = e2ZZIso;
+        l3ZZIso = m1ZZIso; l4ZZIso = m2ZZIso;
+        l1ZZIsoPass = e1ZZIsoPass; l2ZZIsoPass = e2ZZIsoPass;
+        l3ZZIsoPass = m1ZZIsoPass; l4ZZIsoPass = m2ZZIsoPass;
+        l1SIP3D = e1SIP3D; l2SIP3D = e2SIP3D;
+        l3SIP3D = m1SIP3D; l4SIP3D = m2SIP3D;
       }
       else{
+        mmee = true;
         Z1mass = m1_m2_Mass; Z2mass = e1_e2_Mass;
         l1Pt = m1Pt; l1Eta = m1Eta; l1Phi = m1Phi; l1Energy = m1Energy;
         l2Pt = m2Pt; l2Eta = m2Eta; l2Phi = m2Phi; l2Energy = m2Energy;
@@ -215,6 +250,12 @@ void ZZLooper::Loop(bool applyScaleFacs){
         l4Pt = e2Pt; l4Eta = e2Eta; l4Phi = e2Phi; l4Energy = e2Energy;
         l1PdgId = m1PdgId; l2PdgId = m2PdgId;
         l3PdgId = e1PdgId; l4PdgId = e2PdgId;
+        l1ZZIso = m1ZZIso; l2ZZIso = m2ZZIso;
+        l3ZZIso = e1ZZIso; l4ZZIso = e2ZZIso;
+        l1ZZIsoPass = m1ZZIsoPass; l2ZZIsoPass = m2ZZIsoPass;
+        l3ZZIsoPass = e1ZZIsoPass; l4ZZIsoPass = e2ZZIsoPass;
+        l1SIP3D = m1SIP3D; l2SIP3D = m2SIP3D;
+        l3SIP3D = e1SIP3D; l4SIP3D = e2SIP3D;
       }
     }
     else if (_channel == "mmmm"){
@@ -225,6 +266,12 @@ void ZZLooper::Loop(bool applyScaleFacs){
       l4Pt = m4Pt; l4Eta = m4Eta; l4Phi = m4Phi; l4Energy = m4Energy;
       l1PdgId = m1PdgId; l2PdgId = m2PdgId;
       l3PdgId = m3PdgId; l4PdgId = m4PdgId;
+      l1ZZIso = m1ZZIso; l2ZZIso = m2ZZIso;
+      l3ZZIso = m3ZZIso; l4ZZIso = m4ZZIso;
+      l1ZZIsoPass = m1ZZIsoPass; l2ZZIsoPass = m2ZZIsoPass;
+      l3ZZIsoPass = m3ZZIsoPass; l4ZZIsoPass = m4ZZIsoPass;
+      l1SIP3D = m1SIP3D; l2SIP3D = m2SIP3D;
+      l3SIP3D = m3SIP3D; l4SIP3D = m4SIP3D;
     }
     // Set primary pair
     if (l1PdgId > 0){
@@ -254,7 +301,8 @@ void ZZLooper::Loop(bool applyScaleFacs){
     );
     */
 
-    if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0){ 
+    bool ZZIsoPass = l1ZZIsoPass && l2ZZIsoPass && l3ZZIsoPass && l4ZZIsoPass;
+    if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0 && ZZIsoPass){ 
       Float_t weight = _isMC? genWeight : 1.;
       if (applyScaleFacs && _isMC) weight *= GetScaleFactor();
 
@@ -272,54 +320,46 @@ void ZZLooper::Loop(bool applyScaleFacs){
       LepPt->Fill(l3Pt, weight);
       LepPt->Fill(l4Pt, weight);
 
+      LepEta->Fill(l1Eta, weight);
+      LepEta->Fill(l2Eta, weight);
+      LepEta->Fill(l3Eta, weight);
+      LepEta->Fill(l4Eta, weight);
+
       PolCosTheta12->Fill(GetPolCosTheta(lp1, ln1), weight);
       PolCosTheta34->Fill(GetPolCosTheta(lp2, ln2), weight);
+
+      LepZZIsoVal->Fill(l1ZZIso, weight);
+      LepZZIsoVal->Fill(l2ZZIso, weight);
+      LepZZIsoVal->Fill(l3ZZIso, weight);
+      LepZZIsoVal->Fill(l4ZZIso, weight);
+
+      LepZZIsoPass->Fill(l1ZZIsoPass, weight);
+      LepZZIsoPass->Fill(l2ZZIsoPass, weight);
+      LepZZIsoPass->Fill(l3ZZIsoPass, weight);
+      LepZZIsoPass->Fill(l4ZZIsoPass, weight);
+
+      LepSIP3D->Fill(l1SIP3D, weight);
+      LepSIP3D->Fill(l2SIP3D, weight);
+      LepSIP3D->Fill(l3SIP3D, weight);
+      LepSIP3D->Fill(l4SIP3D, weight);
+
+      if (_channel == "eemm"){
+        if (mmee) num_mmee++;
+        else num_eemm++;
+      }
     }
   }
   std::cout << "End looping." << std::endl;
-
-  // Formatting
-  InvMass4l->SetMinimum(0);
-  InvMass12->SetMinimum(0);
-  InvMass34->SetMinimum(0);
-  PolCosTheta12->SetMinimum(0);
-  PolCosTheta34->SetMinimum(0);
-  LepEnergy->SetMinimum(0);
-  LepPt->SetMinimum(0);
-
-  // Scaling
-  if (_norm){
-    InvMass4l->Scale(1.0/InvMass4l->Integral());
-    InvMass12->Scale(1.0/InvMass12->Integral());
-    InvMass34->Scale(1.0/InvMass34->Integral());
-    PolCosTheta12->Scale(1.0/PolCosTheta12->Integral());
-    PolCosTheta34->Scale(1.0/PolCosTheta34->Integral());
-    LepEnergy->Scale(1.0/LepEnergy->Integral());
-    LepPt->Scale(1.0/LepPt->Integral());
-  }
-  else if (_isMC){
-    _ntuple->GetEntry(0);
-    float histScaling = _kfac * _xsec * _lumi / summedWeights;
-    InvMass4l->Scale(histScaling);
-    InvMass12->Scale(histScaling);
-    InvMass34->Scale(histScaling);
-    PolCosTheta12->Scale(histScaling);
-    PolCosTheta34->Scale(histScaling);
-    LepEnergy->Scale(histScaling);
-    LepPt->Scale(histScaling);
-  }
-
-  // Drawing
+  
+  // Writing README
   if (plot || _makePlots){
-    c->cd();
-    auto Draw = [&c, &dirname, _filetype=_filetype](TH1* hist){
-      hist->Draw("hist");
-      c->SaveAs((dirname + "/" + hist->GetName() + _filetype).c_str());
-    };
-
     std::ofstream readme((dirname + "/README").c_str());
     if (readme.is_open()){
       readme << "Events: " << InvMass4l->GetEntries() << std::endl;
+      if (_channel == "eemm"){
+        readme << "  - eemm: " << num_eemm << std::endl;
+        readme << "  - mmee: " << num_mmee << std::endl;
+      }
       if (_isMC && !_norm){
         float histScaling = _kfac * _xsec * _lumi / summedWeights;
         readme << "Scaling: " << histScaling << std::endl;
@@ -331,30 +371,51 @@ void ZZLooper::Loop(bool applyScaleFacs){
       if (applyScaleFacs) readme << "Efficiency SFs applied." << std::endl;
       readme.close();
     }
-
-    Draw(InvMass4l);
-    Draw(InvMass12);
-    Draw(InvMass34);
-    Draw(PolCosTheta12);
-    Draw(PolCosTheta34);
-    Draw(LepEnergy);
-    Draw(LepPt);
   }
-
-  // Writing
+  
+  // Creating subdirs in histfile
   histout->cd();
   histout->rmdir(_channel.c_str());
   TDirectory *subdir = histout->mkdir(_channel.c_str());
   if (subdir != nullptr) subdir->cd();
-
-  InvMass4l->Write();
-  InvMass12->Write();
-  InvMass34->Write();
-  PolCosTheta12->Write();
-  PolCosTheta34->Write();
-  LepEnergy->Write();
-  LepPt->Write();
   
+  // Creating MC scale factors
+  _ntuple->GetEntry(0);
+  float histScaling = _kfac * _xsec * _lumi / summedWeights;
+  
+  // Defining draw functions
+  auto Draw = [&c, &dirname, _filetype=_filetype](TH1* hist){
+    hist->Draw("hist");
+    c->SaveAs((dirname + "/" + hist->GetName() + _filetype).c_str());
+  };
+  
+  // Finalizing
+  c->cd();
+  for (auto histname : histnames){
+    TH1F *hist = (TH1F*)gROOT->Get(histname.c_str());
+    if (hist == nullptr){
+      std::cout << "Couldn't find hist. Skipping " << histname << std::endl;
+      break;
+    }
+    // Formatting
+    hist->SetMinimum(0);
+
+    // Scaling
+    if (_norm)
+      hist->Scale(1.0/hist->Integral());
+    else if (_isMC)
+      hist->Scale(histScaling);
+
+    // Drawing
+    if (plot || _makePlots)
+      Draw(hist);
+
+    // Writing
+    hist->Write();
+
+    delete hist;
+  }
+
   c->Close();
   histout->Close();
 }
