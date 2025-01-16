@@ -119,38 +119,38 @@ double CompLooper::GetScaleFactor(Ntuple ntuple){
     }
     if (_mIdSF != nullptr){
       if (ntuple == Ntuple::First){
-        if (m1Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta1), m1Pt1, "nominal"});
-        if (m2Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta1), m2Pt1, "nominal"});
+        if (m1Pt1 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta1), m1Pt1, "nominal"});
+        if (m2Pt1 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta1), m2Pt1, "nominal"});
       }
       else if (ntuple == Ntuple::Second){
-        if (m1Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta2), m1Pt2, "nominal"});
-        if (m2Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta2), m2Pt2, "nominal"});
+        if (m1Pt2 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta2), m1Pt2, "nominal"});
+        if (m2Pt2 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta2), m2Pt2, "nominal"});
       }
       else{
-        if (m1PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
-        if (m2PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
+        if (m1PtEE > 15) weight *= _mIdEESF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
+        if (m2PtEE > 15) weight *= _mIdEESF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
       }
     }
   }
   else if (_channel == "mmmm"){
     if (_mIdSF != nullptr){
       if (ntuple == Ntuple::First){
-        if (m1Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta1), m1Pt1, "nominal"});
-        if (m2Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta1), m2Pt1, "nominal"});
-        if (m3Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta1), m3Pt1, "nominal"});
-        if (m4Pt1 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta1), m4Pt1, "nominal"});
+        if (m1Pt1 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta1), m1Pt1, "nominal"});
+        if (m2Pt1 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta1), m2Pt1, "nominal"});
+        if (m3Pt1 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta1), m3Pt1, "nominal"});
+        if (m4Pt1 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta1), m4Pt1, "nominal"});
       }
       else if (ntuple == Ntuple::Second){
-        if (m1Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta2), m1Pt2, "nominal"});
-        if (m2Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta2), m2Pt2, "nominal"});
-        if (m3Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta2), m3Pt2, "nominal"});
-        if (m4Pt2 > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta2), m4Pt2, "nominal"});
+        if (m1Pt2 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta2), m1Pt2, "nominal"});
+        if (m2Pt2 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta2), m2Pt2, "nominal"});
+        if (m3Pt2 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta2), m3Pt2, "nominal"});
+        if (m4Pt2 > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta2), m4Pt2, "nominal"});
       }
       else{
-        if (m1PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
-        if (m2PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
-        if (m3PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3EtaEE), m3PtEE, "nominal"});
-        if (m4PtEE > 15) weight *= _mIdEESF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4EtaEE), m4PtEE, "nominal"});
+        if (m1PtEE > 15) weight *= _mIdEESF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1EtaEE), m1PtEE, "nominal"});
+        if (m2PtEE > 15) weight *= _mIdEESF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2EtaEE), m2PtEE, "nominal"});
+        if (m3PtEE > 15) weight *= _mIdEESF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m3EtaEE), m3PtEE, "nominal"});
+        if (m4PtEE > 15) weight *= _mIdEESF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m4EtaEE), m4PtEE, "nominal"});
       }
     }
   }

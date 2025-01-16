@@ -78,16 +78,16 @@ double ZZLooper::GetScaleFactor(){
       if (e2Pt > 10) weight *= recoref->evaluate({"2022Re-recoBCD", "sf", GetEleRecoSFName(e2Pt), e2Eta, e2Pt});
     }
     if (_mIdSF != nullptr){
-      if (m1Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta), m1Pt, "nominal"});
-      if (m2Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta), m2Pt, "nominal"});
+      if (m1Pt > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta), m1Pt, "nominal"});
+      if (m2Pt > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta), m2Pt, "nominal"});
     }
   }
   else if (_channel == "mmmm"){
     if (_mIdSF != nullptr){
-      if (m1Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta), m1Pt, "nominal"});
-      if (m2Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta), m2Pt, "nominal"});
-      if (m3Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta), m3Pt, "nominal"});
-      if (m4Pt > 15) weight *= _mIdSF->at("NUM_TightID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta), m4Pt, "nominal"});
+      if (m1Pt > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m1Eta), m1Pt, "nominal"});
+      if (m2Pt > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m2Eta), m2Pt, "nominal"});
+      if (m3Pt > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m3Eta), m3Pt, "nominal"});
+      if (m4Pt > 15) weight *= _mIdSF->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({std::fabs(m4Eta), m4Pt, "nominal"});
     }
   }
   if (_pileupSF != nullptr)
