@@ -807,6 +807,12 @@ void CompLooper::Loop(bool applyScaleFacs){
         readme << "  - Summed Weights: " << summedWeights2 << std::endl;
         readme << "  - k-factor: " << _kfac2 << std::endl;
       }
+      if (!_isT1MC && !_isT2MC){
+        readme << _label1 << " Luminosity: " << _lumi << " fb-1" << std::endl;
+        readme << "  - Event/lumi: " << InvMass4l_1->GetEntries() / _lumi << std::endl;
+        readme << _label2 << " Luminosity: " << _lumi2<< " fb-1" << std::endl;
+        readme << "  - Event/lumi: " << InvMass4l_2->GetEntries() / _lumi2 << std::endl;
+      }
       if (applyScaleFacs) readme << "Efficiency SFs applied." << std::endl;
       if (_doEE) readme << "MC pre- and postEE samples weighted." << std::endl;
       readme.close();
@@ -880,6 +886,10 @@ void CompLooper::Loop(bool applyScaleFacs){
     if (!_norm){
       if (_isT1MC) hist1->Scale(histScaling1);
       if (_isT2MC) hist2->Scale(histScaling2);
+      if (!_isT1MC && !_isT2MC){
+        //hist1->Scale(1.0/_lumi);
+        hist2->Scale(_lumi/_lumi2);
+      }
     }
     else{
       hist1->Scale(1.0/hist1->Integral());
@@ -918,8 +928,7 @@ void CompLooper::Loop(bool applyScaleFacs){
 int main(int nargs, char *argv[]){
   float kfac;
   kfac = 1.2; //qqZZ kfac ~1.1 plus esimated missing ggZZ signal
-  //kfac = 1.0835 * 1.01587 * 1.0004874;//qqZZ kfac * expected ggZZ signal * expected EWK signal
-  kfac = 1.0835;
+  kfac = 1.0835; //qqZZ kfac for run2
   std::stringstream ss_kfac; ss_kfac << kfac;
 
   auto parser = argparse::ArgumentParser(nargs, argv)
@@ -933,13 +942,15 @@ int main(int nargs, char *argv[]){
     .help("if true, consider second input to be MC");
   parser.add_argument<double>("-l", "--lumi").def("37.846170084") //2022
     .help("data luminosity to scale MC in fb-1");
+  parser.add_argument<double>("--lumi2").def("1")
+    .help("if comparing two data samples, this is the data luminosity of the second sample in fb-1");
   parser.add_argument<double>("-x", "--xsec1").def("1256") //qqZZ
     .help("cross-section of given MC process in fb for first input");
   parser.add_argument<double>("-X", "--xsec2").def("1256") //qqZZ
     .help("cross-section of given MC process in fb for second input");
-  parser.add_argument<double>("-k", "--kfac1").def(ss_kfac.str()) //qqZZ kfac ~1.1 plus missing ggZZ signal
+  parser.add_argument<double>("-k", "--kfac1").def(ss_kfac.str()) 
     .help("k-factor of given MC process for first input");
-  parser.add_argument<double>("-K", "--kfac2").def(ss_kfac.str()) //qqZZ kfac ~1.1 plus missing ggZZ signal
+  parser.add_argument<double>("-K", "--kfac2").def(ss_kfac.str()) 
     .help("k-factor of given MC process for second input");
 #ifndef NOSF
   parser.add_argument<bool>("--sf").def("false")
@@ -990,15 +1001,15 @@ int main(int nargs, char *argv[]){
     l.SetPlotFiletype(args["filetype"]);
     l.SetEE(args["EE"]);
     
+    l.SetLumi(args["lumi"]);
+    l.SetLumi2(args["lumi2"]);
     if (args["mc1"].is_true()){
       l.SetMC1();
-      l.SetLumi(args["lumi"]);
       l.SetXsec1(args["xsec1"]);
       l.SetKfac1(args["kfac1"]);
     }
     if (args["mc2"].is_true()){
       l.SetMC2();
-      l.SetLumi(args["lumi"]);
       l.SetXsec2(args["xsec2"]);
       l.SetKfac2(args["kfac2"]);
     }

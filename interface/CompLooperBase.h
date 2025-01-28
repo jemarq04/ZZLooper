@@ -19,6 +19,7 @@ class CompLooperBase{
     ~CompLooperBase();
 
     void SetLumi(float lumi=1.){_lumi = lumi;}
+    void SetLumi2(float lumi=1.){_lumi2 = lumi;}
     void SetMC1(bool isMC=true){_isT1MC = isMC;}
     void SetMC2(bool isMC=true){_isT2MC = isMC;}
     void SetXsec1(float xsec=1.){_xsec1 = xsec;}
@@ -44,7 +45,7 @@ class CompLooperBase{
 
     TFile *_infile1=nullptr, *_infile2=nullptr, *_infileEE=nullptr;
     TTree *_ntuple1, *_ntuple2, *_ntupleEE;
-    Float_t _lumi=1.;
+    Float_t _lumi=1., _lumi2=1.;
     Float_t _xsec1=1., _xsec2=1.;
     Float_t _kfac1=1., _kfac2=1.;
     std::string _name;
