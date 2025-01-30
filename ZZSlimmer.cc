@@ -80,9 +80,7 @@ void ZZSlimmer::Slim(){
   for (std::string lep : {l1, l2, l3, l4}){
     cutstring += lep + "ZZTightIDNoVtx && ";
     _ntuple->SetBranchStatus((lep + "ZZTightIDNoVtx").c_str(), 1);
-    if (lep[0] == 'e'){
-      cutstring += lep + "SIP3D < 4.0 && "; 
-    }
+    cutstring += lep + "SIP3D < 4.0 && "; //Only needed for electrons, but good to be safe
     _ntuple->SetBranchStatus((lep + "SIP3D").c_str(), 1);
     _ntuple->SetBranchStatus((lep + "ZZIsoPass").c_str(), 1);
     _ntuple->SetBranchStatus((lep + "ZZIso").c_str(), 1);
