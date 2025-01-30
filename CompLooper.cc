@@ -31,6 +31,8 @@ class CompLooper : public CompLooperBase {
     void SetMode(std::string mode){_mode = mode;}
     void SetMakePlots(bool val=true){_makePlots = val;}
     void SetMakeRatios(bool val=true){_makeRatios = val;}
+    void HideLegend(bool val=true){_hideLegend = val;}
+    void SkipZSelection(bool val=true){_Zsel = !val;}
     void SetPlotFiletype(std::string ft=".png");
 
     double GetScaleFactor(Ntuple ntuple);
@@ -41,6 +43,7 @@ class CompLooper : public CompLooperBase {
     bool _debug = false;
     bool _makePlots = false, _makeRatios = false;
     bool _norm = false, _deduplicate = false;
+    bool _hideLegend = false, _Zsel = true;
     std::string _label1, _label2;
     std::string _filetype = ".png", _mode = "UPDATE";
 #ifndef NOSF
@@ -257,7 +260,8 @@ void CompLooper::Loop(bool applyScaleFacs){
   };
 
   gROOT->cd();
-  TH1F *InvMass4l_1 = new TH1F("InvMass4l_1", TString::Format("4-Lepton Invariant Mass (%s)", _label1.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
+  //TH1F *InvMass4l_1 = new TH1F("InvMass4l_1", TString::Format("4-Lepton Invariant Mass (%s)", _label1.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
+  TH1F *InvMass4l_1 = new TH1F("InvMass4l_1", TString::Format("4-Lepton Invariant Mass (%s)", _label1.c_str()), 70, 0, 350); 
   TH1F *InvMass12_1 = new TH1F("InvMass12_1", TString::Format("Primary Lepton Pair Invariant Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass34_1 = new TH1F("InvMass34_1", TString::Format("Secondary Lepton Pair Invariant Mass (%s)", _label1.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy_1 = new TH1F("LepEnergy_1", TString::Format("Lepton Energy (%s)", _label1.c_str()), 60, 0, 600);
@@ -280,7 +284,8 @@ void CompLooper::Loop(bool applyScaleFacs){
   SetTitles(LepZZIsoPass_1, "Pass");
   SetTitles(LepSIP3D_1, "SIP3D");
 
-  TH1F *InvMass4l_2 = new TH1F("InvMass4l_2", TString::Format("4-Lepton Invariant Mass (%s)", _label2.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
+  //TH1F *InvMass4l_2 = new TH1F("InvMass4l_2", TString::Format("4-Lepton Invariant Mass (%s)", _label2.c_str()), InvMass_4l_binning.size()-1, &InvMass_4l_binning[0]);
+  TH1F *InvMass4l_2 = new TH1F("InvMass4l_2", TString::Format("4-Lepton Invariant Mass (%s)", _label2.c_str()), 70, 0, 350); 
   TH1F *InvMass12_2 = new TH1F("InvMass12_2", TString::Format("Primary Lepton Pair Invariant Mass (%s)", _label2.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *InvMass34_2 = new TH1F("InvMass34_2", TString::Format("Secondary Lepton Pair Invariant Mass (%s)", _label2.c_str()), InvMass_pair_binning.size()-1, &InvMass_pair_binning[0]);
   TH1F *LepEnergy_2 = new TH1F("LepEnergy_2", TString::Format("Lepton Energy (%s)", _label2.c_str()), 60, 0, 600);
@@ -416,8 +421,10 @@ void CompLooper::Loop(bool applyScaleFacs){
       );
       */
 
+      bool ZMass = !_Zsel || (_Zsel && Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0);
       bool ZZIsoPass = l1ZZIsoPass && l2ZZIsoPass && l3ZZIsoPass && l4ZZIsoPass;
-      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0 && ZZIsoPass){ 
+      bool SIPCut = l1SIP3D < 4. && l2SIP3D < 4. && l3SIP3D < 4. && l4SIP3D < 4.;
+      if (ZMass && ZZIsoPass && SIPCut){
         Float_t weight = 1.;
         if (_isT1MC){
           weight *= genWeight1;
@@ -556,8 +563,10 @@ void CompLooper::Loop(bool applyScaleFacs){
       );
       */
 
+      bool ZMass = !_Zsel || (_Zsel && Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0);
       bool ZZIsoPass = l1ZZIsoPass && l2ZZIsoPass && l3ZZIsoPass && l4ZZIsoPass;
-      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0 && ZZIsoPass){ 
+      bool SIPCut = l1SIP3D < 4. && l2SIP3D < 4. && l3SIP3D < 4. && l4SIP3D < 4.;
+      if (ZMass && ZZIsoPass && SIPCut){
         Float_t weight = 1.;
         if (_isT2MC){
           weight *= genWeight2;
@@ -695,8 +704,10 @@ void CompLooper::Loop(bool applyScaleFacs){
       );
       */
 
+      bool ZMass = !_Zsel || (_Zsel && Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0);
       bool ZZIsoPass = l1ZZIsoPass && l2ZZIsoPass && l3ZZIsoPass && l4ZZIsoPass;
-      if (Z1mass > 60.0 && Z1mass < 120.0 && Z2mass > 60.0 && Z2mass < 120.0 && ZZIsoPass){ 
+      bool SIPCut = l1SIP3D < 4. && l2SIP3D < 4. && l3SIP3D < 4. && l4SIP3D < 4.;
+      if (ZMass && ZZIsoPass && SIPCut){
         Float_t weight = genWeightEE;
         if (applyScaleFacs) weight *= GetScaleFactor(Ntuple::EE);
         weight *= 0.8;
@@ -844,7 +855,7 @@ void CompLooper::Loop(bool applyScaleFacs){
     hist->Draw("hist");
     c->SaveAs((dirname + "/" + labels[idx] + "/" + hist->GetName() + _filetype).c_str());
   };
-	auto DrawSame = [&c, &dirname, _filetype=_filetype, &labels](TH1* hist1, TH1* hist2){
+	auto DrawSame = [&c, &dirname, _filetype=_filetype, _hideLegend=_hideLegend, &labels](TH1* hist1, TH1* hist2){
 		std::string histname = hist1->GetName();
 		histname = histname.substr(0, histname.size()-2);
 		TH1 *hist1_clone = (TH1*)hist1->Clone(histname.c_str());
@@ -865,7 +876,7 @@ void CompLooper::Loop(bool applyScaleFacs){
 		TLegend *legend = new TLegend(0.3, 0.21, 0.3, 0.21, "");
 		legend->AddEntry(hist1_clone, labels[0].c_str());
 		legend->AddEntry(hist2, labels[1].c_str());
-		legend->Draw();
+		if (!_hideLegend) legend->Draw();
 		c->SaveAs((dirname + "/" + histname + _filetype).c_str());
 		delete hist1_clone;
 	};
@@ -962,6 +973,10 @@ int main(int nargs, char *argv[]){
     .help("if true, scale histograms to 1");
   parser.add_argument<bool>("--deduplicate").def("false")
     .help("if true, skip events whose event number has already been processed");
+  parser.add_argument<bool>("--hide-legend").def("false")
+    .help("if true, do not draw legend on plots");
+  parser.add_argument<bool>("--no-Zselection").def("false")
+    .help("if true, skip the usual Z mass selections (60 < ZMass < 120)");
   parser.add_argument<bool>("--EE").def("false")
     .help("if true, the looper will analyze MC samples with weights for pre- and postEE comparison.");
   parser.add_argument<bool>("-r", "--recreate").def("false")
@@ -998,6 +1013,8 @@ int main(int nargs, char *argv[]){
     l.SetDebug(args["debug"]);
     l.SetNorm(args["norm"]);
     l.SetDeduplicate(args["deduplicate"]);
+    l.HideLegend(args["hide_legend"]);
+    l.SkipZSelection(args["no_Zselection"]);
     l.SetPlotFiletype(args["filetype"]);
     l.SetEE(args["EE"]);
     
