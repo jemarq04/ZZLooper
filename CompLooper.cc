@@ -951,7 +951,7 @@ int main(int nargs, char *argv[]){
     .help("if true, consider first input to be MC");
   parser.add_argument<bool>("--mc2").def("false")
     .help("if true, consider second input to be MC");
-  parser.add_argument<double>("-l", "--lumi").def("37.846170084") //2022
+  parser.add_argument<double>("-l", "--lumi").def(" 34.651641200") //2022 processed
     .help("data luminosity to scale MC in fb-1");
   parser.add_argument<double>("--lumi2").def("1")
     .help("if comparing two data samples, this is the data luminosity of the second sample in fb-1");
